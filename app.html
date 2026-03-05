@@ -2032,7 +2032,8 @@ buildChapters();
 </div>
 
 <script type="module">
-  import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { initializeApp, getApps }
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, onAuthStateChanged, signOut }
                               from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, updateDoc, arrayUnion, serverTimestamp }
@@ -2047,26 +2048,54 @@ buildChapters();
     appId:             "1:32970752586:web:69c5da5b650481a7a51cb3"
   };
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-  let   currentUser = null;
+  function hideOverlay() {
+    const ov = document.getElementById("auth-loading-overlay");
+    if (ov) ov.style.display = "none";
+  }
 
-  onAuthStateChanged(auth, user => {
-    document.getElementById("auth-loading-overlay").style.display = "none";
-    if (!user) { window.location.href = "index.html"; return; }
-    currentUser = user;
-    const badge = document.getElementById("user-badge");
-    if (badge) {
-      badge.style.display = "flex";
-      const name = user.displayName || user.email;
-      document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
-      document.getElementById("user-name-badge").textContent = name.split(" ")[0];
-      document.getElementById("um-name-text").textContent  = name;
-      document.getElementById("um-email-text").textContent = user.email;
-    }
-    try { updateDoc(doc(db,"users",user.uid), { lastLogin: serverTimestamp() }); } catch(e){}
-  });
+  // Safety timeout — if Firebase never responds in 8s, redirect to login
+  const safetyTimer = setTimeout(() => {
+    hideOverlay();
+    window.location.href = "index.html";
+  }, 8000);
+
+  let app, auth, db, currentUser = null;
+
+  try {
+    // Prevent duplicate app error
+    app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db   = getFirestore(app);
+
+    onAuthStateChanged(auth, user => {
+      clearTimeout(safetyTimer);
+      hideOverlay();
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+      currentUser = user;
+      const badge = document.getElementById("user-badge");
+      if (badge) {
+        badge.style.display = "flex";
+        const name = user.displayName || user.email || "Student";
+        document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("user-name-badge").textContent = name.split(" ")[0];
+        document.getElementById("um-name-text").textContent  = name;
+        document.getElementById("um-email-text").textContent = user.email;
+      }
+      try { updateDoc(doc(db,"users",user.uid), { lastLogin: serverTimestamp() }); } catch(e){}
+    }, err => {
+      clearTimeout(safetyTimer);
+      hideOverlay();
+      window.location.href = "index.html";
+    });
+
+  } catch(initErr) {
+    clearTimeout(safetyTimer);
+    hideOverlay();
+    window.location.href = "index.html";
+  }
 
   window.trackChapterVisit = async function(ci, title) {
     if (!currentUser) return;
@@ -2084,7 +2113,7 @@ buildChapters();
   };
 
   window.doSignOut = async function() {
-    await signOut(auth);
+    try { await signOut(auth); } catch(e){}
     window.location.href = "index.html";
   };
 
@@ -2092,7 +2121,8 @@ buildChapters();
     const m = document.getElementById("user-menu");
     m.classList.toggle("open");
     document.addEventListener("click", function closeMenu(e) {
-      if (!m.contains(e.target) && !document.getElementById("user-badge").contains(e.target)) {
+      const badge = document.getElementById("user-badge");
+      if (!m.contains(e.target) && badge && !badge.contains(e.target)) {
         m.classList.remove("open");
         document.removeEventListener("click", closeMenu);
       }
