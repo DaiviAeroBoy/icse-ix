@@ -1,0 +1,2105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICSE Class IX — Computer Applications</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #060b14;
+    --surface: #0d1625;
+    --surface2: #111d30;
+    --border: #1e3050;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --accent4: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2eaf8;
+    --muted: #5a7299;
+    --glow: 0 0 20px rgba(0,229,255,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'Outfit',sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+
+  /* PARTICLES BG */
+  #particles { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+  .star { position:absolute; border-radius:50%; background:#00e5ff; animation:twinkle var(--dur,3s) ease-in-out infinite; opacity:0; }
+  @keyframes twinkle { 0%,100%{opacity:0;transform:scale(1)} 50%{opacity:var(--op,.5);transform:scale(1.2)} }
+
+  /* HEADER */
+  header {
+    position:sticky; top:0; z-index:100;
+    background: rgba(6,11,20,0.9);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 1.5rem;
+  }
+  .header-top {
+    display:flex; align-items:center; gap:1rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid rgba(30,48,80,0.5);
+  }
+  .logo-badge {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    padding: 0.35rem 0.8rem;
+    border-radius: 6px;
+    font-family:'Space Mono',monospace;
+    font-weight:700;
+    font-size:0.75rem;
+    letter-spacing:2px;
+    color:#fff;
+    white-space:nowrap;
+  }
+  .header-title {
+    font-size:1.1rem;
+    font-weight:700;
+    letter-spacing:0.5px;
+  }
+  .header-title span { color: var(--accent); }
+
+  /* OVERALL PROGRESS */
+  .overall-progress {
+    margin-left:auto;
+    display:flex; align-items:center; gap:0.6rem;
+    font-size:0.8rem;
+    color: var(--muted);
+  }
+  .prog-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:20px;
+    width:120px; height:8px;
+    overflow:hidden;
+  }
+  .prog-fill {
+    height:100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.5s ease;
+    border-radius:20px;
+  }
+
+  /* NAV CHAPTERS */
+  .chapter-nav {
+    display:flex;
+    overflow-x:auto;
+    gap:0;
+    scrollbar-width:none;
+    padding: 0;
+  }
+  .chapter-nav::-webkit-scrollbar { display:none; }
+  .ch-btn {
+    flex-shrink:0;
+    background:none; border:none;
+    color: var(--muted);
+    font-family:'Outfit',sans-serif;
+    font-size:0.75rem;
+    font-weight:500;
+    padding: 0.7rem 1rem;
+    cursor:pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    display:flex; align-items:center; gap:0.4rem;
+    white-space:nowrap;
+  }
+  .ch-btn:hover { color: var(--text); }
+  .ch-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .ch-btn .ch-num {
+    background: var(--surface2);
+    border-radius:4px;
+    padding: 0.1rem 0.35rem;
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+  }
+  .ch-btn.done .ch-num { background: var(--accent3); color:#000; }
+
+  /* MAIN */
+  main { position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:2rem 1.5rem; }
+
+  /* CHAPTER VIEW */
+  .chapter-view { display:none; }
+  .chapter-view.active { display:block; animation: slideIn 0.4s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  /* CHAPTER HEADER */
+  .ch-header {
+    margin-bottom:2rem;
+    position:relative;
+  }
+  .ch-label {
+    font-family:'Space Mono',monospace;
+    font-size:0.7rem;
+    color: var(--accent);
+    letter-spacing:3px;
+    text-transform:uppercase;
+    margin-bottom:0.5rem;
+  }
+  .ch-title {
+    font-size:clamp(1.6rem,4vw,2.5rem);
+    font-weight:900;
+    line-height:1.1;
+    margin-bottom:1rem;
+  }
+  .ch-title .highlight { color: var(--accent); }
+
+  /* CHAPTER PROGRESS BAR */
+  .ch-progress-bar {
+    background: var(--surface2);
+    border-radius:4px;
+    height:6px;
+    margin-bottom:0.5rem;
+    overflow:hidden;
+  }
+  .ch-progress-fill {
+    height:100%;
+    background: linear-gradient(90deg,var(--accent2),var(--accent));
+    transition:width 0.6s ease;
+    border-radius:4px;
+  }
+  .ch-progress-label { font-size:0.75rem; color:var(--muted); display:flex; justify-content:space-between; }
+
+  /* SECTION CARDS */
+  .section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius:14px;
+    padding:1.5rem;
+    margin-bottom:1.2rem;
+    position:relative;
+    overflow:hidden;
+    transition: border-color 0.3s;
+  }
+  .section-card::before {
+    content:'';
+    position:absolute; left:0; top:0; bottom:0;
+    width:3px;
+    background: linear-gradient(180deg,var(--accent2),var(--accent));
+    border-radius:3px 0 0 3px;
+  }
+  .section-card:hover { border-color: var(--accent2); }
+  .section-title {
+    font-size:1rem;
+    font-weight:700;
+    margin-bottom:0.8rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .section-icon { font-size:1.2rem; }
+  .section-body {
+    font-size:0.9rem;
+    color: #a8c0e8;
+    line-height:1.7;
+  }
+  .section-body p { margin-bottom:0.6rem; }
+  .section-body ul { padding-left:1.2rem; }
+  .section-body li { margin-bottom:0.3rem; }
+  .section-body strong { color: var(--accent); }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: #020810;
+    border: 1px solid var(--border);
+    border-radius:10px;
+    padding:1.2rem;
+    margin:1rem 0;
+    font-family:'Space Mono',monospace;
+    font-size:0.78rem;
+    line-height:1.8;
+    overflow-x:auto;
+    position:relative;
+  }
+  .code-block .kw { color:#c678dd; }
+  .code-block .cls { color:#e5c07b; }
+  .code-block .fn { color:#61afef; }
+  .code-block .str { color:#98c379; }
+  .code-block .cmt { color:#5c6370; font-style:italic; }
+  .code-block .num { color:#d19a66; }
+  .code-tag {
+    position:absolute; top:0.5rem; right:0.7rem;
+    font-size:0.6rem; color: var(--muted);
+    font-family:'Space Mono',monospace;
+    letter-spacing:1px;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: rgba(0,229,255,0.06);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius:10px;
+    padding:1rem 1.2rem;
+    margin:1rem 0;
+    font-size:0.85rem;
+    display:flex; gap:0.7rem; align-items:flex-start;
+  }
+  .info-box .icon { font-size:1.1rem; flex-shrink:0; margin-top:0.1rem; }
+  .tip-box {
+    background: rgba(16,185,129,0.06);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius:10px;
+    padding:1rem 1.2rem;
+    margin:1rem 0;
+    font-size:0.85rem;
+    display:flex; gap:0.7rem; align-items:flex-start;
+  }
+  .warn-box {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius:10px;
+    padding:1rem 1.2rem;
+    margin:1rem 0;
+    font-size:0.85rem;
+    display:flex; gap:0.7rem; align-items:flex-start;
+  }
+
+  /* TABLE */
+  .styled-table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:0.83rem; }
+  .styled-table th {
+    background: var(--surface2);
+    color: var(--accent);
+    padding:0.6rem 0.8rem;
+    text-align:left;
+    font-family:'Space Mono',monospace;
+    font-size:0.7rem;
+    letter-spacing:1px;
+    border: 1px solid var(--border);
+  }
+  .styled-table td {
+    padding:0.55rem 0.8rem;
+    border: 1px solid var(--border);
+    color: #a8c0e8;
+  }
+  .styled-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* FLASHCARD SECTION */
+  .flashcards-section { margin: 2rem 0; }
+  .flashcards-title {
+    font-size:1.1rem;
+    font-weight:800;
+    margin-bottom:1rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .fc-wrapper { position:relative; min-height:200px; }
+  .fc-counter {
+    font-family:'Space Mono',monospace;
+    font-size:0.75rem;
+    color:var(--muted);
+    margin-bottom:0.7rem;
+    text-align:right;
+  }
+  .flashcard {
+    width:100%;
+    min-height:160px;
+    cursor:pointer;
+    perspective:1000px;
+  }
+  .fc-inner {
+    position:relative;
+    width:100%;
+    min-height:160px;
+    transform-style:preserve-3d;
+    transition:transform 0.55s cubic-bezier(0.4,0,0.2,1);
+  }
+  .flashcard.flipped .fc-inner { transform:rotateY(180deg); }
+  .fc-front, .fc-back {
+    position:absolute; inset:0;
+    backface-visibility:hidden;
+    border-radius:14px;
+    padding:1.5rem;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+  }
+  .fc-front {
+    background: linear-gradient(135deg, var(--surface2), #0d1e3a);
+    border: 1px solid var(--border);
+  }
+  .fc-back {
+    background: linear-gradient(135deg, #0a1f1a, #071228);
+    border: 1px solid rgba(16,185,129,0.3);
+    transform:rotateY(180deg);
+  }
+  .fc-q-label { font-size:0.65rem; color:var(--muted); letter-spacing:2px; margin-bottom:0.6rem; font-family:'Space Mono',monospace; }
+  .fc-question { font-size:1rem; font-weight:600; line-height:1.5; }
+  .fc-answer { font-size:0.9rem; color:#a8c0e8; line-height:1.6; }
+  .fc-a-label { font-size:0.65rem; color:var(--accent3); letter-spacing:2px; margin-bottom:0.6rem; font-family:'Space Mono',monospace; }
+  .fc-hint { font-size:0.7rem; color:var(--muted); margin-top:0.8rem; }
+  .fc-controls { display:flex; gap:0.7rem; margin-top:0.8rem; justify-content:center; }
+  .fc-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family:'Outfit',sans-serif;
+    font-size:0.8rem;
+    padding:0.5rem 1.2rem;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .fc-btn:hover { background:var(--border); }
+  .fc-btn.primary { background: linear-gradient(135deg,var(--accent2),var(--accent)); border:none; color:#fff; font-weight:600; }
+  .fc-btn:disabled { opacity:0.3; cursor:not-allowed; }
+
+  /* QUIZ */
+  .quiz-section { margin-top:2.5rem; }
+  .quiz-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:1.2rem;
+  }
+  .quiz-title { font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:0.5rem; }
+  .quiz-score-badge {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:20px;
+    padding:0.3rem 0.8rem;
+    font-family:'Space Mono',monospace;
+    font-size:0.75rem;
+    color: var(--accent);
+  }
+  .quiz-q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius:14px;
+    padding:1.5rem;
+    margin-bottom:1rem;
+  }
+  .q-number {
+    font-family:'Space Mono',monospace;
+    font-size:0.65rem;
+    color:var(--muted);
+    letter-spacing:2px;
+    margin-bottom:0.6rem;
+  }
+  .q-text { font-size:0.95rem; font-weight:600; margin-bottom:1rem; line-height:1.5; }
+  .q-options { display:flex; flex-direction:column; gap:0.5rem; }
+  .q-opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:10px;
+    padding:0.7rem 1rem;
+    cursor:pointer;
+    font-size:0.87rem;
+    transition:all 0.25s;
+    display:flex; align-items:center; gap:0.6rem;
+    color: var(--text);
+    text-align:left;
+  }
+  .q-opt:hover:not(.disabled) { border-color:var(--accent2); background:rgba(124,58,237,0.1); }
+  .q-opt.correct { border-color:var(--accent3); background:rgba(16,185,129,0.15); color:#6ee7b7; }
+  .q-opt.wrong { border-color:var(--danger); background:rgba(239,68,68,0.1); color:#fca5a5; }
+  .q-opt.disabled { cursor:default; }
+  .opt-circle {
+    width:22px; height:22px; border-radius:50%;
+    background: var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.65rem;
+    font-family:'Space Mono',monospace;
+    flex-shrink:0;
+    font-weight:700;
+  }
+  .q-opt.correct .opt-circle { background:var(--accent3); color:#000; }
+  .q-opt.wrong .opt-circle { background:var(--danger); color:#fff; }
+  .q-explanation {
+    margin-top:0.7rem;
+    padding:0.8rem 1rem;
+    background: rgba(0,229,255,0.05);
+    border: 1px solid rgba(0,229,255,0.15);
+    border-radius:8px;
+    font-size:0.82rem;
+    color:#a8c0e8;
+    display:none;
+  }
+  .q-explanation.show { display:block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .quiz-next-btn {
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    border:none; color:#fff;
+    font-family:'Outfit',sans-serif;
+    font-weight:700; font-size:0.9rem;
+    padding:0.75rem 2rem;
+    border-radius:10px;
+    cursor:pointer;
+    margin-top:0.5rem;
+    transition:transform 0.2s, box-shadow 0.2s;
+  }
+  .quiz-next-btn:hover { transform:translateY(-2px); box-shadow:var(--glow); }
+  .quiz-result {
+    display:none;
+    text-align:center;
+    padding:2.5rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius:14px;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+  .result-score {
+    font-size:4rem;
+    font-weight:900;
+    line-height:1;
+    margin:0.5rem 0;
+  }
+  .result-score.great { color:var(--accent3); text-shadow:0 0 30px rgba(16,185,129,0.5); }
+  .result-score.ok { color:var(--accent4); text-shadow:0 0 30px rgba(245,158,11,0.5); }
+  .result-score.low { color:var(--danger); text-shadow:0 0 30px rgba(239,68,68,0.5); }
+  .result-emoji { font-size:2.5rem; margin-bottom:0.5rem; }
+  .result-msg { font-size:1rem; color:var(--muted); margin-bottom:1.5rem; }
+  .retry-btn {
+    background:transparent;
+    border: 1px solid var(--border);
+    color:var(--text);
+    font-family:'Outfit',sans-serif;
+    font-size:0.85rem;
+    padding:0.6rem 1.5rem;
+    border-radius:8px;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .retry-btn:hover { border-color:var(--accent2); color:var(--accent); }
+
+  /* NEXT CHAPTER BTN */
+  .next-ch-btn {
+    display:inline-flex;
+    align-items:center; gap:0.5rem;
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    border:none; color:#fff;
+    font-family:'Outfit',sans-serif;
+    font-weight:700; font-size:0.9rem;
+    padding:0.8rem 2rem;
+    border-radius:12px;
+    cursor:pointer;
+    margin-top:1.5rem;
+    transition:all 0.3s;
+  }
+  .next-ch-btn:hover { transform:translateY(-3px); box-shadow:0 8px 25px rgba(0,229,255,0.2); }
+
+  /* CONFETTI OVERLAY */
+  #confetti-overlay { position:fixed; inset:0; pointer-events:none; z-index:9999; overflow:hidden; }
+  .confetti-piece {
+    position:absolute;
+    width:10px; height:10px;
+    animation:confettiFall 1.2s ease-out forwards;
+  }
+  @keyframes confettiFall {
+    0% { transform:translateY(-20px) rotate(0deg); opacity:1; }
+    100% { transform:translateY(80vh) rotate(720deg); opacity:0; }
+  }
+
+  /* CORRECT PULSE */
+  .correct-pulse {
+    animation:correctPulse 0.5s ease;
+  }
+  @keyframes correctPulse {
+    0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)}
+  }
+
+  /* SIDEBAR-LIKE CHAPTER OVERVIEW */
+  .ch-overview {
+    display:flex;
+    gap:0.4rem;
+    flex-wrap:wrap;
+    margin-bottom:1.5rem;
+  }
+  .topic-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius:20px;
+    padding:0.25rem 0.7rem;
+    font-size:0.72rem;
+    color:var(--muted);
+  }
+
+  /* TOGGLE SECTIONS */
+  .toggle-section {
+    border: 1px solid var(--border);
+    border-radius:12px;
+    margin-bottom:0.8rem;
+    overflow:hidden;
+  }
+  .toggle-header {
+    padding:1rem 1.2rem;
+    cursor:pointer;
+    display:flex; justify-content:space-between; align-items:center;
+    background: var(--surface);
+    font-weight:600; font-size:0.9rem;
+    transition:background 0.2s;
+    user-select:none;
+  }
+  .toggle-header:hover { background: var(--surface2); }
+  .toggle-arrow { transition:transform 0.3s; font-size:0.8rem; color:var(--muted); }
+  .toggle-section.open .toggle-arrow { transform:rotate(180deg); }
+  .toggle-body {
+    max-height:0; overflow:hidden;
+    transition:max-height 0.4s ease;
+    background: var(--surface2);
+    padding:0 1.2rem;
+    font-size:0.88rem; color:#a8c0e8; line-height:1.7;
+  }
+  .toggle-section.open .toggle-body { max-height:600px; padding:1rem 1.2rem; }
+
+  /* WELCOME SCREEN */
+  #welcome {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:3rem 1rem;
+  }
+  .welcome-badge {
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    color:#fff;
+    font-size:0.7rem;
+    letter-spacing:3px;
+    padding:0.35rem 1rem;
+    border-radius:20px;
+    font-family:'Space Mono',monospace;
+    margin-bottom:1.5rem;
+  }
+  .welcome-title {
+    font-size:clamp(2rem,6vw,3.5rem);
+    font-weight:900;
+    line-height:1.1;
+    margin-bottom:1rem;
+  }
+  .welcome-title .line2 { color:var(--accent); }
+  .welcome-sub { font-size:1rem; color:var(--muted); max-width:500px; margin-bottom:2rem; line-height:1.6; }
+  .welcome-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:0.7rem;
+    width:100%;
+    max-width:700px;
+    margin-bottom:2rem;
+  }
+  .wg-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:1rem 0.7rem;
+    cursor:pointer;
+    transition:all 0.25s;
+    text-align:center;
+  }
+  .wg-card:hover { border-color:var(--accent2); transform:translateY(-3px); box-shadow:0 8px 20px rgba(124,58,237,0.2); }
+  .wg-num { font-family:'Space Mono',monospace; font-size:0.65rem; color:var(--muted); margin-bottom:0.4rem; }
+  .wg-label { font-size:0.78rem; font-weight:600; line-height:1.3; }
+  .start-btn {
+    background:linear-gradient(135deg,var(--accent2),var(--accent));
+    border:none; color:#fff;
+    font-family:'Outfit',sans-serif;
+    font-weight:800; font-size:1rem;
+    padding:0.9rem 2.5rem;
+    border-radius:12px;
+    cursor:pointer;
+    transition:all 0.3s;
+    letter-spacing:0.5px;
+  }
+  .start-btn:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,229,255,0.25); }
+
+  /* QUIZ PROGRESS DOTS */
+  .q-dots { display:flex; gap:0.35rem; margin-bottom:1rem; }
+  .q-dot { width:8px; height:8px; border-radius:50%; background:var(--border); transition:all 0.3s; }
+  .q-dot.answered { background:var(--accent2); }
+  .q-dot.correct-dot { background:var(--accent3); }
+  .q-dot.wrong-dot { background:var(--danger); }
+
+  /* RESPONSIVE */
+  @media(max-width:600px) {
+    main { padding:1.5rem 1rem; }
+    .section-card { padding:1.1rem; }
+    .flashcard { min-height:140px; }
+    .fc-inner { min-height:140px; }
+    .fc-front, .fc-back { min-height:140px; }
+  }
+
+  /* ACCENT TAG */
+  .tag {
+    display:inline-block;
+    background:rgba(0,229,255,0.1);
+    border:1px solid rgba(0,229,255,0.2);
+    color:var(--accent);
+    border-radius:4px;
+    padding:0.1rem 0.4rem;
+    font-size:0.75rem;
+    font-family:'Space Mono',monospace;
+  }
+  .tag.purple { background:rgba(124,58,237,0.1); border-color:rgba(124,58,237,0.3); color:#a78bfa; }
+  .tag.green { background:rgba(16,185,129,0.1); border-color:rgba(16,185,129,0.3); color:#6ee7b7; }
+  .tag.orange { background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.3); color:#fcd34d; }
+
+  .divider { height:1px; background:var(--border); margin:1.5rem 0; }
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+<div id="confetti-overlay"></div>
+
+<header>
+  <div class="header-top">
+    <div class="logo-badge">ICSE</div>
+    <div class="header-title">Class IX — <span>Computer Applications</span></div>
+    
+    <div id="user-badge" style="display:none">
+      <div id="user-avatar"></div>
+      <span id="user-name-badge"></span>
+    </div>
+    <div id="user-menu">
+      <div class="um-header">
+        <div class="um-name" id="um-name-text"></div>
+        <div class="um-email" id="um-email-text"></div>
+      </div>
+      <div class="um-item" onclick="window.location.href='index.html'">📊 My Progress</div>
+      <div class="um-item danger" onclick="doSignOut()">↩ Sign Out</div>
+    </div>
+<div class="overall-progress">
+      <span id="overall-label">0 / 11</span>
+      <div class="prog-pill"><div class="prog-fill" id="overall-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <nav class="chapter-nav" id="chapter-nav">
+    <button class="ch-btn active" onclick="showChapter('welcome')" id="nav-welcome">
+      🏠 <span>Home</span>
+    </button>
+    <button class="ch-btn" onclick="showChapter(0)" id="nav-0">
+      <span class="ch-num">01</span> OOP Concepts
+    </button>
+    <button class="ch-btn" onclick="showChapter(1)" id="nav-1">
+      <span class="ch-num">02</span> Objects & Classes
+    </button>
+    <button class="ch-btn" onclick="showChapter(2)" id="nav-2">
+      <span class="ch-num">03</span> Identifiers
+    </button>
+    <button class="ch-btn" onclick="showChapter(3)" id="nav-3">
+      <span class="ch-num">04</span> Operators
+    </button>
+    <button class="ch-btn" onclick="showChapter(4)" id="nav-4">
+      <span class="ch-num">05</span> Class Structure
+    </button>
+    <button class="ch-btn" onclick="showChapter(5)" id="nav-5">
+      <span class="ch-num">06</span> Data Processing
+    </button>
+    <button class="ch-btn" onclick="showChapter(6)" id="nav-6">
+      <span class="ch-num">07</span> Math Methods
+    </button>
+    <button class="ch-btn" onclick="showChapter(7)" id="nav-7">
+      <span class="ch-num">08</span> Conditionals
+    </button>
+    <button class="ch-btn" onclick="showChapter(8)" id="nav-8">
+      <span class="ch-num">09</span> Loops
+    </button>
+    <button class="ch-btn" onclick="showChapter(9)" id="nav-9">
+      <span class="ch-num">10</span> Nested Loops
+    </button>
+    <button class="ch-btn" onclick="showChapter(10)" id="nav-10">
+      <span class="ch-num">11</span> Ethics
+    </button>
+  </nav>
+</header>
+
+<main>
+
+<!-- WELCOME -->
+<div id="chapter-welcome" class="chapter-view active">
+  <div id="welcome">
+    <div class="welcome-badge">ICSE · CLASS IX · 2028</div>
+    <h1 class="welcome-title">
+      Master<br><span class="line2">Computer Applications</span>
+    </h1>
+    <p class="welcome-sub">Interactive lessons, flashcards, and quizzes covering all 11 chapters of the ICSE Class IX Computer Applications syllabus in Java.</p>
+    <div class="welcome-grid" id="welcome-grid"></div>
+    <button class="start-btn" onclick="showChapter(0)">Start Learning →</button>
+  </div>
+</div>
+
+<!-- CHAPTER VIEWS WILL BE INJECTED HERE -->
+</main>
+
+<script>
+// ═══════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════
+const chapters = [
+  {
+    title: "Introduction to OOP Concepts",
+    subtitle: "Foundations of Object Oriented Programming",
+    icon: "🧩",
+    topics: ["OOP vs Procedural","Abstraction","Encapsulation","Inheritance","Polymorphism","Java Setup"],
+    content: `
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">⚙️</span> What is OOP?</div>
+        <div class="section-body">
+          <p><strong>Object Oriented Programming (OOP)</strong> is a programming paradigm based on the concept of <strong>objects</strong>, which contain both data (attributes) and functions (methods).</p>
+          <div class="info-box"><span class="icon">💡</span><span>Think of it like this: a <strong>Car</strong> is an object. It has attributes (color, speed, brand) and behaviors (start, stop, accelerate). OOP models the real world this way!</span></div>
+          <p><strong>Procedure Oriented vs Object Oriented:</strong></p>
+          <table class="styled-table">
+            <tr><th>Procedure Oriented</th><th>Object Oriented</th></tr>
+            <tr><td>Focuses on functions/procedures</td><td>Focuses on objects and classes</td></tr>
+            <tr><td>Data is global, less secure</td><td>Data is encapsulated, more secure</td></tr>
+            <tr><td>Top-down approach</td><td>Bottom-up approach</td></tr>
+            <tr><td>Examples: C, Pascal</td><td>Examples: Java, C++, Python</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔑</span> The 4 Pillars of OOP</div>
+        <div class="section-body">
+          <p><span class="tag">1</span> <strong>Data Abstraction</strong> — Hiding the internal implementation and showing only the essential features. <em>Example: You use a TV remote without knowing its internal circuit.</em></p>
+          <div class="divider"></div>
+          <p><span class="tag purple">2</span> <strong>Encapsulation</strong> — Wrapping data and methods together in a single unit (class), and restricting access to some components. <em>Example: A capsule contains medicine — the ingredients are hidden but the effect is visible.</em></p>
+          <div class="divider"></div>
+          <p><span class="tag green">3</span> <strong>Inheritance</strong> — The ability of a class to derive properties and characteristics from another class. <em>Example: A Child inherits features from a Parent.</em></p>
+          <div class="divider"></div>
+          <p><span class="tag orange">4</span> <strong>Polymorphism</strong> — The ability of an object to take many forms. One function name, different behaviors. <em>Example: A person acts as a student in school, a son at home, a customer in a shop.</em></p>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">☕</span> Java Setup & Environment</div>
+        <div class="section-body">
+          <p><strong>Open Source:</strong> Java is free to use. The open-source toolkit is <strong>OpenJDK</strong> (Open Java Development Kit).</p>
+          <p style="margin-top:0.8rem"><strong>Popular IDEs for Java:</strong></p>
+          <ul>
+            <li><strong>BlueJ</strong> — Designed for beginners, ideal for ICSE</li>
+            <li>DrJava, NetBeans, MyEclipse</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Hardware Requirements:</strong> Any modern PC. Minimum 2GB RAM recommended.</p>
+          <p style="margin-top:0.6rem"><strong>Software Requirements:</strong> JDK 11 or higher + BlueJ 5.4.2 or higher</p>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🚀</span> Features of Java</div>
+        <div class="section-body">
+          <ul>
+            <li><strong>Simple</strong> — Easy syntax, similar to C++</li>
+            <li><strong>Object Oriented</strong> — Everything is an object</li>
+            <li><strong>Platform Independent</strong> — Write once, run anywhere (WORA)</li>
+            <li><strong>Robust</strong> — Strong error handling, no pointers</li>
+            <li><strong>Secure</strong> — Built-in security features</li>
+          </ul>
+          <div class="tip-box"><span class="icon">✅</span><span><strong>Real-time Java Applications:</strong> Mobile apps (Android), Banking systems, E-commerce, Gaming, Chatbots, Virtual Assistants, Healthcare Robotics</span></div>
+        </div>
+      </div>
+    `,
+    flashcards: [
+      { q:"What does OOP stand for?", a:"Object Oriented Programming — a paradigm that models programs using objects containing data and methods." },
+      { q:"Name the 4 pillars of OOP.", a:"1. Abstraction  2. Encapsulation  3. Inheritance  4. Polymorphism" },
+      { q:"What is Abstraction?", a:"Hiding internal details and showing only essential features. Example: using a TV remote without knowing its internal circuitry." },
+      { q:"What is Encapsulation?", a:"Wrapping data and methods into a single unit (class) and controlling access to the data." },
+      { q:"What is Inheritance?", a:"A mechanism where a child class acquires the properties and behaviors of a parent class." },
+      { q:"What is Polymorphism?", a:"The ability of one entity (method/object) to take many forms — one name, multiple behaviors." },
+      { q:"What is JVM?", a:"Java Virtual Machine — it executes Java bytecode and makes Java platform independent." },
+      { q:"What is OpenJDK?", a:"Open Java Development Kit — the free, open-source implementation of Java." },
+    ],
+    quiz: [
+      { q:"Which OOP principle hides internal details from the user?", opts:["Inheritance","Polymorphism","Abstraction","Encapsulation"], ans:2, exp:"Abstraction hides the internal implementation and exposes only necessary features." },
+      { q:"Java is known as platform independent because:", opts:["It runs only on Windows","Bytecode runs on any JVM","It uses open source","It has no pointers"], ans:1, exp:"Java compiles to bytecode which the JVM can run on any platform — WORA (Write Once Run Anywhere)." },
+      { q:"Which OOP principle bundles data and methods together?", opts:["Abstraction","Polymorphism","Inheritance","Encapsulation"], ans:3, exp:"Encapsulation bundles related data and methods into a single class unit." },
+      { q:"Which of the following is the recommended Java IDE for ICSE beginners?", opts:["Eclipse","NetBeans","BlueJ","IntelliJ"], ans:2, exp:"BlueJ is specifically designed for beginners and is the recommended IDE for ICSE." },
+      { q:"What does WORA stand for in Java?", opts:["Write Once Run Anywhere","Work On Remote Apps","Write Once Read Anywhere","Work On Run Anytime"], ans:0, exp:"WORA — Write Once Run Anywhere — means Java programs can run on any device with a JVM." },
+    ]
+  },
+  {
+    title: "Elementary Concept of Objects & Classes",
+    subtitle: "Understanding the building blocks of Java",
+    icon: "🏗️",
+    topics:["Class Definition","Objects","Attributes","Methods","Blueprint Analogy","Object Factory"],
+    content: `
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🏛️</span> What is a Class?</div>
+        <div class="section-body">
+          <p>A <strong>class</strong> is a user-defined data type — a blueprint or template for creating objects.</p>
+          <div class="info-box"><span class="icon">🏠</span><span>Think of a class like an <strong>architectural blueprint</strong>. The blueprint is not a house itself, but many houses can be built from it.</span></div>
+          <p>A class defines:</p>
+          <ul>
+            <li><strong>Attributes (fields)</strong> — The state/data (e.g., color, name, age)</li>
+            <li><strong>Methods (behaviors)</strong> — The actions an object can perform (e.g., eat, walk, speak)</li>
+          </ul>
+          <p style="margin-top:0.8rem">Three ways to think of a class:</p>
+          <ul>
+            <li>As a <strong>blueprint</strong> to create objects</li>
+            <li>As an <strong>object factory</strong> that produces similar objects</li>
+            <li>As a <strong>new user-defined data type</strong> with its own functionality</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📦</span> What is an Object?</div>
+        <div class="section-body">
+          <p>An <strong>object</strong> is an instance of a class — a real entity in memory created from a class blueprint.</p>
+          <table class="styled-table">
+            <tr><th>Class</th><th>Object (Instance)</th></tr>
+            <tr><td>Student (class)</td><td>Rahul, Priya, Ankit (objects)</td></tr>
+            <tr><td>Car (class)</td><td>My Honda, Your BMW (objects)</td></tr>
+            <tr><td>Animal (class)</td><td>Dog named Bruno (object)</td></tr>
+          </table>
+          <p style="margin-top:0.8rem">Objects have:</p>
+          <ul>
+            <li><strong>State</strong> — stored in attributes/member variables</li>
+            <li><strong>Behavior</strong> — defined by methods</li>
+            <li><strong>Identity</strong> — a unique reference in memory</li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">💬</span> Message Passing</div>
+        <div class="section-body">
+          <p>Objects communicate by <strong>passing messages</strong> to each other — this is simply calling a method on an object.</p>
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="cls">Student</span> s1 = <span class="kw">new</span> <span class="cls">Student</span>();  <span class="cmt">// create object</span>
+s1.<span class="fn">setName</span>(<span class="str">"Rahul"</span>);        <span class="cmt">// message passing — calling a method</span>
+s1.<span class="fn">displayDetails</span>();       <span class="cmt">// calling another method</span></div>
+          <div class="tip-box"><span class="icon">✅</span><span>The dot operator <code>.</code> is used to access the members (attributes and methods) of an object.</span></div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is a class in Java?", a:"A user-defined data type / blueprint / template for creating objects. It defines attributes (data) and methods (behavior)." },
+      { q:"What is an object?", a:"An object is an instance of a class — a real entity created from a class blueprint that exists in memory." },
+      { q:"What are the three things an object has?", a:"1. State (stored in variables)  2. Behavior (defined by methods)  3. Identity (unique memory address)" },
+      { q:"What is 'message passing' in Java?", a:"Message passing means calling a method on an object — objects communicate by calling each other's methods." },
+      { q:"How is a class like an object factory?", a:"Just as a factory produces many similar products, a class can create many objects that share the same structure and behavior." },
+    ],
+    quiz:[
+      { q:"A class is best described as:", opts:["An instance of an object","A blueprint to create objects","A type of loop","A built-in Java function"], ans:1, exp:"A class is a blueprint or template from which objects (instances) are created." },
+      { q:"Which of these represents the 'state' of an object?", opts:["Methods","Constructors","Member variables (attributes)","Comments"], ans:2, exp:"The state of an object is stored in its member variables (also called attributes or fields)." },
+      { q:"How do objects communicate in Java?", opts:["Through global variables","By message passing (method calls)","Through files","Through System.in"], ans:1, exp:"Objects communicate via message passing — calling methods on each other." },
+      { q:"'Rahul' is a Student. In OOP terms, 'Student' is the ___ and 'Rahul' is the ___.", opts:["Object, Class","Class, Object","Method, Variable","Variable, Method"], ans:1, exp:"Student is the class (blueprint) and Rahul is an object (instance) of that class." },
+    ]
+  },
+  {
+    title: "Identifiers and Literals",
+    subtitle: "Character set, tokens, data types, and type conversion",
+    icon: "🔤",
+    topics:["Character Set","ASCII / Unicode","Escape Sequences","Tokens","Data Types","Type Conversion"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔠</span> Character Set in Java</div>
+        <div class="section-body">
+          <p>Java uses <strong>Unicode</strong> character set — a universal standard that represents characters from virtually all world languages.</p>
+          <table class="styled-table">
+            <tr><th>Character Type</th><th>ASCII Range</th></tr>
+            <tr><td>Uppercase (A–Z)</td><td>65 – 90</td></tr>
+            <tr><td>Lowercase (a–z)</td><td>97 – 122</td></tr>
+            <tr><td>Digits (0–9)</td><td>48 – 57</td></tr>
+            <tr><td>Space</td><td>32</td></tr>
+          </table>
+          <div class="info-box"><span class="icon">🌍</span><span><strong>Why Unicode?</strong> Java uses Unicode for globalization, localization, and data exchange across different languages and systems worldwide.</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">⬛</span> Escape Sequences</div>
+        <div class="section-body">
+          <table class="styled-table">
+            <tr><th>Escape Sequence</th><th>Meaning</th></tr>
+            <tr><td><code>\\n</code></td><td>New line</td></tr>
+            <tr><td><code>\\t</code></td><td>Horizontal tab</td></tr>
+            <tr><td><code>\\\\</code></td><td>Backslash</td></tr>
+            <tr><td><code>\\"</code></td><td>Double quote</td></tr>
+            <tr><td><code>\\'</code></td><td>Single quote</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🎟️</span> Tokens in Java</div>
+        <div class="section-body">
+          <p>The smallest individual unit in a program is called a <strong>token</strong>. Types:</p>
+          <ul>
+            <li><strong>Keywords</strong> — Reserved words: <code>int, class, if, for, while, return</code></li>
+            <li><strong>Identifiers</strong> — Names given to variables, methods, classes: <code>age, myMethod, Student</code></li>
+            <li><strong>Literals</strong> — Constant values: <code>5, 3.14, 'A', "Hello"</code></li>
+            <li><strong>Operators</strong> — Symbols: <code>+, -, *, /, ==</code></li>
+            <li><strong>Punctuators</strong> — <code>{ } ( ) ; ,</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📊</span> Primitive Data Types</div>
+        <div class="section-body">
+          <table class="styled-table">
+            <tr><th>Type</th><th>Size</th><th>Example</th></tr>
+            <tr><td>byte</td><td>1 byte (8 bits)</td><td>byte b = 10;</td></tr>
+            <tr><td>short</td><td>2 bytes (16 bits)</td><td>short s = 200;</td></tr>
+            <tr><td>int</td><td>4 bytes (32 bits)</td><td>int n = 1000;</td></tr>
+            <tr><td>long</td><td>8 bytes (64 bits)</td><td>long l = 1000000L;</td></tr>
+            <tr><td>float</td><td>4 bytes (32 bits)</td><td>float f = 3.14f;</td></tr>
+            <tr><td>double</td><td>8 bytes (64 bits)</td><td>double d = 3.14;</td></tr>
+            <tr><td>char</td><td>2 bytes (16 bits)</td><td>char c = 'A';</td></tr>
+            <tr><td>boolean</td><td>1 bit</td><td>boolean x = true;</td></tr>
+          </table>
+          <p style="margin-top:0.8rem"><strong>Non-primitive types:</strong> String, Arrays, Classes, Interfaces</p>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔄</span> Type Conversion</div>
+        <div class="section-body">
+          <p><strong>Implicit (Widening):</strong> Automatic conversion from smaller to larger type.</p>
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="kw">int</span> a = <span class="num">10</span>;
+<span class="kw">double</span> b = a;  <span class="cmt">// implicit: int → double</span></div>
+          <p><strong>Explicit (Narrowing / Casting):</strong> Manual conversion from larger to smaller type.</p>
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="kw">double</span> d = <span class="num">9.7</span>;
+<span class="kw">int</span> i = (<span class="kw">int</span>) d;  <span class="cmt">// explicit cast: double → int (loses .7)</span></div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is the ASCII value of 'A'?", a:"65. Uppercase A=65, Z=90. Lowercase a=97, z=122. Digits 0=48, 9=57." },
+      { q:"What does \\n do in Java?", a:"\\n is an escape sequence that inserts a new line in the output." },
+      { q:"What are Java tokens?", a:"Tokens are the smallest units of a program: Keywords, Identifiers, Literals, Operators, Punctuators." },
+      { q:"What is the size of an int in Java?", a:"int is 4 bytes (32 bits)." },
+      { q:"What is implicit type conversion?", a:"Automatic conversion from a smaller data type to a larger one (e.g., int to double). No data loss." },
+      { q:"What is explicit type conversion?", a:"Manual conversion using a cast operator, e.g. (int)9.7 = 9. Can result in data loss." },
+    ],
+    quiz:[
+      { q:"What is the ASCII value of 'a' (lowercase)?", opts:["65","97","48","90"], ans:1, exp:"Lowercase 'a' has ASCII value 97. Uppercase 'A' is 65." },
+      { q:"Which is NOT a primitive data type in Java?", opts:["int","double","String","char"], ans:2, exp:"String is a non-primitive (reference) type. int, double, char are all primitive types." },
+      { q:"Which escape sequence creates a new line?", opts:["\\\\t","\\\\n","\\\\r","\\\\b"], ans:1, exp:"\\n is the newline escape sequence. \\t creates a tab." },
+      { q:"How many bytes does a 'char' occupy in Java?", opts:["1 byte","2 bytes","4 bytes","8 bytes"], ans:1, exp:"char in Java is 2 bytes (16 bits) because Java uses Unicode (not ASCII)." },
+      { q:"double d = 9.5; int i = (int)d; What is the value of i?", opts:["10","9","9.5","Error"], ans:1, exp:"Explicit casting truncates the decimal. (int)9.5 = 9 (not rounded, just truncated)." },
+    ]
+  },
+  {
+    title: "Operators in Java",
+    subtitle: "Arithmetic, relational, logical, and more",
+    icon: "➕",
+    topics:["Unary/Binary/Ternary","Arithmetic","Relational","Logical","Assignment","Increment/Decrement","Hierarchy"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📐</span> Forms of Operators</div>
+        <div class="section-body">
+          <ul>
+            <li><strong>Unary</strong> — Operates on one operand: <code>-a, ++a, !b</code></li>
+            <li><strong>Binary</strong> — Operates on two operands: <code>a + b, a > b</code></li>
+            <li><strong>Ternary</strong> — Operates on three operands: <code>condition ? val1 : val2</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔢</span> Types of Operators</div>
+        <div class="section-body">
+          <table class="styled-table">
+            <tr><th>Type</th><th>Operators</th><th>Example</th></tr>
+            <tr><td>Arithmetic</td><td>+ - * / %</td><td>10 % 3 = 1</td></tr>
+            <tr><td>Relational</td><td>== != > < >= <=</td><td>5 > 3 → true</td></tr>
+            <tr><td>Logical</td><td>&& || !</td><td>true && false → false</td></tr>
+            <tr><td>Assignment</td><td>= += -= *= /=</td><td>x += 5 → x = x+5</td></tr>
+            <tr><td>Increment</td><td>++</td><td>a++ or ++a</td></tr>
+            <tr><td>Decrement</td><td>--</td><td>a-- or --a</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">⬆️⬇️</span> Prefix vs Postfix</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="kw">int</span> a = <span class="num">5</span>;
+<span class="kw">int</span> b = ++a;  <span class="cmt">// prefix: a becomes 6 FIRST, then b = 6</span>
+<span class="kw">int</span> c = a++;  <span class="cmt">// postfix: c = 6 FIRST, then a becomes 7</span></div>
+          <div class="warn-box"><span class="icon">⚠️</span><span><strong>Prefix (++a):</strong> increment THEN use. &nbsp;<strong>Postfix (a++):</strong> use THEN increment.</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🏆</span> Operator Precedence (Hierarchy)</div>
+        <div class="section-body">
+          <p>From highest to lowest priority:</p>
+          <ol>
+            <li>Unary: <code>++ -- !</code></li>
+            <li>Multiplicative: <code>* / %</code></li>
+            <li>Additive: <code>+ -</code></li>
+            <li>Relational: <code>> < >= <=</code></li>
+            <li>Equality: <code>== !=</code></li>
+            <li>Logical AND: <code>&&</code></li>
+            <li>Logical OR: <code>||</code></li>
+            <li>Ternary: <code>?:</code></li>
+            <li>Assignment: <code>= += -= ...</code></li>
+          </ol>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🆕</span> Special Operators</div>
+        <div class="section-body">
+          <p><strong>new operator:</strong> Creates a new object dynamically in memory.</p>
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="cls">Scanner</span> sc = <span class="kw">new</span> <span class="cls">Scanner</span>(<span class="cls">System</span>.in);  <span class="cmt">// new creates object</span></div>
+          <p style="margin-top:0.8rem"><strong>dot (.) operator:</strong> Accesses members of a class/object.</p>
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Hello"</span>);
+sc.<span class="fn">nextInt</span>();  <span class="cmt">// dot accesses methods of sc object</span></div>
+          <div class="tip-box"><span class="icon">📝</span><span><strong>Note:</strong> Bitwise and shift operators are <em>exempted</em> from the ICSE Class IX syllabus.</span></div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is a ternary operator?", a:"An operator with 3 operands: condition ? valueIfTrue : valueIfFalse. Example: max = (a>b) ? a : b;" },
+      { q:"What is the difference between prefix and postfix ++?", a:"Prefix (++a): increments first then uses the value. Postfix (a++): uses the value first then increments." },
+      { q:"What does the modulus (%) operator do?", a:"Returns the remainder of division. Example: 10 % 3 = 1." },
+      { q:"What is a counter vs accumulator?", a:"Counter: increments by 1 each time (count++). Accumulator: adds a varying value each time (sum += n)." },
+      { q:"What does the 'new' operator do?", a:"Creates a new object dynamically in memory. Example: Scanner sc = new Scanner(System.in);" },
+    ],
+    quiz:[
+      { q:"What is the result of: int a=5; int b = a++ + ++a;", opts:["11","12","10","13"], ans:1, exp:"a++ uses 5 (a becomes 6). ++a increments to 7 then uses 7. b = 5 + 7 = 12." },
+      { q:"Which operator has the HIGHEST precedence?", opts:["+ (addition)","* (multiplication)","++ (unary)","&& (logical AND)"], ans:2, exp:"Unary operators like ++ and -- have the highest precedence among the listed operators." },
+      { q:"What does x += 5 mean?", opts:["x = 5","x = x - 5","x = x + 5","x = x * 5"], ans:2, exp:"x += 5 is shorthand for x = x + 5." },
+      { q:"The ternary operator takes how many operands?", opts:["1","2","3","4"], ans:2, exp:"The ternary operator (?:) takes 3 operands: condition, value-if-true, value-if-false." },
+      { q:"Which operator is used to create a new object?", opts:["dot (.)","new","this","create"], ans:1, exp:"The 'new' keyword/operator dynamically allocates memory and creates a new object." },
+    ]
+  },
+  {
+    title: "Basic Structure of a Class in Java",
+    subtitle: "Writing your first Java programs",
+    icon: "📝",
+    topics:["Class Structure","main Method","import Statement","Scanner Class","System.out"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🗂️</span> Basic Class Structure</div>
+        <div class="section-body">
+          <p>Every Java program follows this basic structure:</p>
+          <div class="code-block"><span class="code-tag">Java — Basic Structure</span>
+<span class="cmt">// Single line comment</span>
+<span class="kw">class</span> <span class="cls">MyClass</span>
+{
+  <span class="kw">void</span> <span class="fn">main</span>(<span class="cmt">/*parameters*/</span>)
+  {
+    <span class="cmt">// Set of statements</span>
+  }
+}
+
+<span class="cmt">/* Multi-line
+   comment */</span></div>
+          <div class="info-box"><span class="icon">💡</span><span>The keywords <strong>public</strong>, <strong>static</strong>, and <strong>String args[]</strong> are default in nature in BlueJ — they may be omitted for ICSE purposes.</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📥</span> Using Scanner Class (Input)</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Java — With Scanner</span>
+<span class="kw">import</span> java.util.*;  <span class="cmt">// import Scanner package</span>
+
+<span class="kw">class</span> <span class="cls">InputExample</span>
+{
+  <span class="kw">void</span> <span class="fn">main</span>()
+  {
+    <span class="cls">Scanner</span> sc = <span class="kw">new</span> <span class="cls">Scanner</span>(<span class="cls">System</span>.in);  <span class="cmt">// create Scanner object</span>
+    <span class="cls">System</span>.out.<span class="fn">print</span>(<span class="str">"Enter name: "</span>);
+    <span class="cls">String</span> name = sc.<span class="fn">nextLine</span>();              <span class="cmt">// read input</span>
+    <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Hello, "</span> + name);
+  }
+}</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🖨️</span> Output Statements</div>
+        <div class="section-body">
+          <table class="styled-table">
+            <tr><th>Statement</th><th>Behavior</th></tr>
+            <tr><td><code>System.out.print()</code></td><td>Prints without a newline at the end</td></tr>
+            <tr><td><code>System.out.println()</code></td><td>Prints and adds a newline at the end</td></tr>
+          </table>
+          <div class="code-block"><span class="code-tag">Java</span>
+<span class="cls">System</span>.out.<span class="fn">print</span>(<span class="str">"Hello"</span>);   <span class="cmt">// Hello</span>
+<span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"World"</span>); <span class="cmt">// World (newline follows)</span>
+<span class="cls">System</span>.out.<span class="fn">println</span>(<span class="num">5</span> + <span class="num">3</span>);   <span class="cmt">// 8</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">💬</span> Types of Comments</div>
+        <div class="section-body">
+          <ul>
+            <li><strong>Single line:</strong> <code>// This is a comment</code></li>
+            <li><strong>Multi-line:</strong> <code>/* This spans multiple lines */</code></li>
+          </ul>
+          <p style="margin-top:0.6rem">Comments are non-executable — they help document the code.</p>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What package must be imported to use Scanner?", a:"import java.util.*; — This imports the Scanner class from the java.util package." },
+      { q:"Difference between print() and println()?", a:"print() outputs text without a newline. println() outputs text followed by a newline character." },
+      { q:"What are the two types of comments in Java?", a:"Single line: // comment  \nMulti-line: /* comment */" },
+      { q:"How do you create a Scanner object?", a:"Scanner sc = new Scanner(System.in);" },
+      { q:"What is the structure of a Java class?", a:"class ClassName { void main() { // statements } }" },
+    ],
+    quiz:[
+      { q:"Which import is needed for the Scanner class?", opts:["import java.io.*;","import java.util.*;","import java.lang.*;","import java.scanner.*;"], ans:1, exp:"The Scanner class is in java.util package, so you need import java.util.*;" },
+      { q:"Which statement prints text WITHOUT a newline?", opts:["System.out.println()","System.out.print()","System.out.write()","System.print()"], ans:1, exp:"System.out.print() outputs text without adding a newline at the end." },
+      { q:"What does // represent in Java?", opts:["Multi-line comment","Single line comment","Start of a class","Import statement"], ans:1, exp:"// starts a single-line comment. Everything after // on that line is ignored by the compiler." },
+      { q:"To read an integer from user input using Scanner, use:", opts:["sc.nextLine()","sc.nextChar()","sc.nextInt()","sc.readInt()"], ans:2, exp:"sc.nextInt() reads the next integer token from user input." },
+    ]
+  },
+  {
+    title: "Data Processing in Java",
+    subtitle: "Initialization, parameters, input, and error types",
+    icon: "⚙️",
+    topics:["Initialization","Parameters","Scanner Methods","Types of Errors"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📋</span> Three Ways to Provide Data</div>
+        <div class="section-body">
+          <ul>
+            <li><strong>Initialization</strong> — Data assigned before execution (hard-coded values)</li>
+            <li><strong>Parameters</strong> — Data passed at the time of method execution</li>
+            <li><strong>Input Stream (Scanner)</strong> — Data entered by user during execution</li>
+          </ul>
+          <div class="code-block"><span class="code-tag">Java — Three Methods</span>
+<span class="cmt">// 1. Initialization</span>
+<span class="kw">int</span> age = <span class="num">15</span>;
+
+<span class="cmt">// 2. Parameters</span>
+<span class="kw">void</span> <span class="fn">greet</span>(<span class="cls">String</span> name) { <span class="cmt">/* name is a parameter */</span> }
+
+<span class="cmt">// 3. Input Stream</span>
+<span class="cls">Scanner</span> sc = <span class="kw">new</span> <span class="cls">Scanner</span>(<span class="cls">System</span>.in);
+<span class="kw">int</span> n = sc.<span class="fn">nextInt</span>();</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📡</span> Scanner Class Methods</div>
+        <div class="section-body">
+          <table class="styled-table">
+            <tr><th>Method</th><th>Reads</th></tr>
+            <tr><td>nextShort()</td><td>short integer</td></tr>
+            <tr><td>nextInt()</td><td>int integer</td></tr>
+            <tr><td>nextLong()</td><td>long integer</td></tr>
+            <tr><td>nextFloat()</td><td>float number</td></tr>
+            <tr><td>nextDouble()</td><td>double number</td></tr>
+            <tr><td>next()</td><td>single word (until whitespace)</td></tr>
+            <tr><td>nextLine()</td><td>entire line including spaces</td></tr>
+            <tr><td>next().charAt(0)</td><td>first character of input</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🐛</span> Types of Errors</div>
+        <div class="section-body">
+          <p><strong>1. Syntax Errors (Compile-time errors):</strong></p>
+          <p style="color:#a8c0e8;margin-bottom:0.8rem">Violations of grammar rules of Java. Detected before execution.</p>
+          <p><strong>2. Runtime Errors:</strong></p>
+          <p style="color:#a8c0e8;margin-bottom:0.8rem">Occur during program execution. E.g., dividing by zero, array out of bounds.</p>
+          <p><strong>3. Logical Errors:</strong></p>
+          <p style="color:#a8c0e8">Program runs successfully but produces wrong output. Hardest to detect!</p>
+          <div class="code-block"><span class="code-tag">Examples</span>
+<span class="cmt">// Syntax Error:</span>
+<span class="kw">int</span> x = 5   <span class="cmt">// missing semicolon!</span>
+
+<span class="cmt">// Runtime Error:</span>
+<span class="kw">int</span> y = <span class="num">10</span> / <span class="num">0</span>;  <span class="cmt">// ArithmeticException!</span>
+
+<span class="cmt">// Logical Error (finds wrong average):</span>
+<span class="kw">int</span> avg = a + b / <span class="num">2</span>; <span class="cmt">// should be (a+b)/2</span></div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is initialization in Java?", a:"Assigning a value to a variable before program execution begins (hard-coded)." },
+      { q:"What does nextLine() do?", a:"Reads an entire line of text including spaces, until the Enter key is pressed." },
+      { q:"What is the difference between next() and nextLine()?", a:"next() reads one word (stops at whitespace). nextLine() reads the entire line including spaces." },
+      { q:"What is a syntax error?", a:"A grammar rule violation detected by the compiler before execution. Example: missing semicolon." },
+      { q:"What is a logical error?", a:"The program runs successfully but produces incorrect output. It's a flaw in the algorithm, not the syntax." },
+      { q:"How do you read a character from Scanner?", a:"Use next().charAt(0) — reads a word and gets its first character." },
+    ],
+    quiz:[
+      { q:"Which Scanner method reads an entire line including spaces?", opts:["next()","nextLine()","nextChar()","nextWord()"], ans:1, exp:"nextLine() reads an entire line of input up to the newline character." },
+      { q:"A program compiles fine but gives a wrong answer. This is a:", opts:["Syntax Error","Runtime Error","Logical Error","Compile Error"], ans:2, exp:"Logical errors are not detected by the compiler. The program runs but gives incorrect results." },
+      { q:"A missing semicolon causes which type of error?", opts:["Runtime Error","Logical Error","Syntax Error","No Error"], ans:2, exp:"Missing semicolons are grammar violations detected by the compiler as syntax errors." },
+      { q:"Which method reads a single-precision floating point number?", opts:["nextDouble()","nextInt()","nextFloat()","nextDecimal()"], ans:2, exp:"nextFloat() reads a float value. nextDouble() reads a double (more precise)." },
+    ]
+  },
+  {
+    title: "Mathematical Library Methods",
+    subtitle: "Java's Math class and java.lang package",
+    icon: "🔢",
+    topics:["java.lang Package","Math.pow()","Math.sqrt()","Math.round()","Math.random()","More Methods"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📦</span> java.lang Package</div>
+        <div class="section-body">
+          <p>The <strong>java.lang</strong> package is the default package in Java — it does not need to be imported explicitly. It contains the <strong>Math</strong> class.</p>
+          <div class="info-box"><span class="icon">💡</span><span>Unlike Scanner (which needs <code>import java.util.*;</code>), the Math class is automatically available because java.lang is imported by default.</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📐</span> Math Class Methods</div>
+        <div class="section-body">
+          <table class="styled-table">
+            <tr><th>Method</th><th>Description</th><th>Example</th></tr>
+            <tr><td>Math.pow(x,y)</td><td>x raised to power y</td><td>Math.pow(2,3) = 8.0</td></tr>
+            <tr><td>Math.sqrt(x)</td><td>Square root of x</td><td>Math.sqrt(16) = 4.0</td></tr>
+            <tr><td>Math.cbrt(x)</td><td>Cube root of x</td><td>Math.cbrt(27) = 3.0</td></tr>
+            <tr><td>Math.ceil(x)</td><td>Round UP to nearest integer</td><td>Math.ceil(4.1) = 5.0</td></tr>
+            <tr><td>Math.floor(x)</td><td>Round DOWN to nearest integer</td><td>Math.floor(4.9) = 4.0</td></tr>
+            <tr><td>Math.round(x)</td><td>Round to nearest integer</td><td>Math.round(4.5) = 5</td></tr>
+            <tr><td>Math.abs(a)</td><td>Absolute value</td><td>Math.abs(-7) = 7</td></tr>
+            <tr><td>Math.max(a,b)</td><td>Larger of two values</td><td>Math.max(5,8) = 8</td></tr>
+            <tr><td>Math.min(a,b)</td><td>Smaller of two values</td><td>Math.min(5,8) = 5</td></tr>
+            <tr><td>Math.random()</td><td>Random double [0.0, 1.0)</td><td>Math.random() ≈ 0.73</td></tr>
+            <tr><td>Math.rint(x)</td><td>Round to nearest even integer</td><td>Math.rint(4.5) = 4.0</td></tr>
+            <tr><td>Math.hypot(a,b)</td><td>√(a²+b²)</td><td>Math.hypot(3,4) = 5.0</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔒</span> Exact Arithmetic Methods</div>
+        <div class="section-body">
+          <ul>
+            <li><code>Math.addExact(int, int)</code> — Adds, throws exception on overflow</li>
+            <li><code>Math.subtractExact(int, int)</code> — Subtracts, throws exception on overflow</li>
+            <li><code>Math.multiplyExact(int, int)</code> — Multiplies, throws exception on overflow</li>
+          </ul>
+          <div class="code-block"><span class="code-tag">Java — Math Examples</span>
+<span class="kw">double</span> area = <span class="cls">Math</span>.<span class="fn">PI</span> * <span class="cls">Math</span>.<span class="fn">pow</span>(r, <span class="num">2</span>);  <span class="cmt">// area of circle</span>
+<span class="kw">double</span> hyp  = <span class="cls">Math</span>.<span class="fn">hypot</span>(<span class="num">3</span>, <span class="num">4</span>);          <span class="cmt">// = 5.0</span>
+<span class="kw">int</span>    rng  = (<span class="kw">int</span>)(<span class="cls">Math</span>.<span class="fn">random</span>() * <span class="num">100</span>); <span class="cmt">// random 0–99</span></div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What does Math.ceil(4.1) return?", a:"5.0 — ceil() rounds UP to the nearest integer (ceiling)." },
+      { q:"What does Math.floor(4.9) return?", a:"4.0 — floor() rounds DOWN to the nearest integer (floor)." },
+      { q:"What does Math.abs(-7) return?", a:"7 — abs() returns the absolute (positive) value of a number." },
+      { q:"What does Math.random() return?", a:"A random double between 0.0 (inclusive) and 1.0 (exclusive)." },
+      { q:"Does java.lang need to be imported?", a:"No! java.lang is the default package in Java and is automatically imported." },
+      { q:"What does Math.hypot(3, 4) return?", a:"5.0 — it calculates √(3² + 4²) = √25 = 5.0 (hypotenuse of right triangle)." },
+    ],
+    quiz:[
+      { q:"What is the result of Math.pow(2, 10)?", opts:["20","100","1024.0","512"], ans:2, exp:"Math.pow(2,10) = 2^10 = 1024. Note it returns a double, so 1024.0." },
+      { q:"Math.round(4.5) returns:", opts:["4","5","4.5","5.0"], ans:1, exp:"Math.round() rounds .5 UP, so Math.round(4.5) = 5 (returns int)." },
+      { q:"Which method returns the square root?", opts:["Math.cbrt()","Math.pow()","Math.sqrt()","Math.rint()"], ans:2, exp:"Math.sqrt(x) returns the square root of x." },
+      { q:"Math.max(15, 23) returns:", opts:["15","23","38","8"], ans:1, exp:"Math.max() returns the larger of two values. Math.max(15,23) = 23." },
+      { q:"Which package contains the Math class?", opts:["java.util","java.io","java.math","java.lang"], ans:3, exp:"Math class is in java.lang package, which is imported automatically — no import needed." },
+    ]
+  },
+  {
+    title: "Conditional Statements in Java",
+    subtitle: "if, if-else, if-else-if, switch-case",
+    icon: "🔀",
+    topics:["if Statement","if-else","if-else-if Ladder","Nested if","switch-case","break","System.exit(0)"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">❓</span> if Statement</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Syntax</span>
+<span class="kw">if</span> (condition)
+{
+  <span class="cmt">// executes only if condition is TRUE</span>
+}</div>
+          <div class="code-block"><span class="code-tag">Example</span>
+<span class="kw">int</span> marks = <span class="num">75</span>;
+<span class="kw">if</span> (marks >= <span class="num">60</span>)
+  <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Pass!"</span>);</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔄</span> if-else Statement</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Syntax</span>
+<span class="kw">if</span> (condition) {
+  <span class="cmt">// if TRUE</span>
+} <span class="kw">else</span> {
+  <span class="cmt">// if FALSE</span>
+}</div>
+          <div class="code-block"><span class="code-tag">Example — Odd or Even</span>
+<span class="kw">if</span> (n % <span class="num">2</span> == <span class="num">0</span>)
+  <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Even"</span>);
+<span class="kw">else</span>
+  <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Odd"</span>);</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🪜</span> if-else-if Ladder</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Example — Grade System</span>
+<span class="kw">if</span> (marks >= <span class="num">90</span>)        <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"A+"</span>);
+<span class="kw">else if</span> (marks >= <span class="num">80</span>)   <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"A"</span>);
+<span class="kw">else if</span> (marks >= <span class="num">70</span>)   <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"B"</span>);
+<span class="kw">else if</span> (marks >= <span class="num">60</span>)   <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"C"</span>);
+<span class="kw">else</span>                     <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Fail"</span>);</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔁</span> switch-case</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Syntax & Example</span>
+<span class="kw">switch</span>(expression) {
+  <span class="kw">case</span> <span class="num">1</span>: <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Monday"</span>); <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="num">2</span>: <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Tuesday"</span>); <span class="kw">break</span>;
+  <span class="kw">case</span> <span class="num">3</span>: <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Wednesday"</span>); <span class="kw">break</span>;
+  <span class="kw">default</span>: <span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Invalid"</span>);
+}</div>
+          <div class="warn-box"><span class="icon">⚠️</span><span><strong>Fall-through:</strong> If <code>break</code> is omitted, execution continues to the next case — this is called fall-through. Always include break unless intentional!</span></div>
+          <p style="margin-top:0.8rem"><code>System.exit(0)</code> — terminates the program immediately. Used in menu-driven programs.</p>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is fall-through in switch-case?", a:"When break is missing, execution 'falls through' to the next case and executes it too." },
+      { q:"What does System.exit(0) do?", a:"Terminates the program immediately. Used in menu-driven programs to exit." },
+      { q:"When is the default case in switch executed?", a:"When none of the case values match the switch expression." },
+      { q:"Can switch work with String in Java?", a:"Yes! From Java 7 onwards, switch can be used with String, int, char, and enum types." },
+      { q:"What is nested if?", a:"An if or if-else statement inside another if or else block." },
+    ],
+    quiz:[
+      { q:"What happens if 'break' is missing in a switch case?", opts:["Syntax error","Fall-through — executes next case too","Program exits","Nothing happens"], ans:1, exp:"Without break, execution falls through to the next case and continues until a break or end of switch." },
+      { q:"Which statement terminates a Java program?", opts:["System.end(0)","System.exit(0)","System.stop()","break"], ans:1, exp:"System.exit(0) terminates the JVM and the program immediately." },
+      { q:"In if-else-if ladder, how many else-if blocks can you have?", opts:["Maximum 3","Maximum 5","Only 1","As many as needed"], ans:3, exp:"You can have as many else-if blocks as needed in an if-else-if ladder." },
+      { q:"Which checks for equality in a condition?", opts:["=","!=","==",">="], ans:2, exp:"== is the equality operator. = is assignment. Don't confuse them!" },
+      { q:"int n=4; if(n%2==0) → This condition is:", opts:["false","true","Error","0"], ans:1, exp:"4 % 2 = 0, so 0 == 0 is true. 4 is an even number." },
+    ]
+  },
+  {
+    title: "Looping / Iterative Statements",
+    subtitle: "for, while, do-while loops and jump statements",
+    icon: "🔁",
+    topics:["for Loop","while Loop","do-while Loop","break","continue","Infinite Loops"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔄</span> Why Loops?</div>
+        <div class="section-body">
+          <p>Loops allow repeating a block of code multiple times — fundamental to computation. Types:</p>
+          <ul>
+            <li><strong>Entry-controlled:</strong> Condition checked before execution — <code>for</code>, <code>while</code></li>
+            <li><strong>Exit-controlled:</strong> Condition checked after execution — <code>do-while</code></li>
+          </ul>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">1️⃣</span> for Loop</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Syntax</span>
+<span class="kw">for</span>(initialization; condition; update)
+{
+  <span class="cmt">// body</span>
+}</div>
+          <div class="code-block"><span class="code-tag">Example — Print 1 to 5</span>
+<span class="kw">for</span>(<span class="kw">int</span> i = <span class="num">1</span>; i <= <span class="num">5</span>; i++)
+{
+  <span class="cls">System</span>.out.<span class="fn">println</span>(i);  <span class="cmt">// 1 2 3 4 5</span>
+}</div>
+          <div class="code-block"><span class="code-tag">Multiple Counter Variables</span>
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>, j=<span class="num">10</span>; i<=<span class="num">5</span>; i++, j--)
+  <span class="cls">System</span>.out.<span class="fn">println</span>(i + <span class="str">" "</span> + j);</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">2️⃣</span> while Loop</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Syntax</span>
+<span class="kw">while</span>(condition)
+{
+  <span class="cmt">// body — runs as long as condition is true</span>
+  <span class="cmt">// update counter inside loop</span>
+}</div>
+          <div class="code-block"><span class="code-tag">Example — Sum of digits</span>
+<span class="kw">int</span> n = <span class="num">1234</span>, sum = <span class="num">0</span>;
+<span class="kw">while</span>(n > <span class="num">0</span>) {
+  sum += n % <span class="num">10</span>;  <span class="cmt">// add last digit</span>
+  n /= <span class="num">10</span>;          <span class="cmt">// remove last digit</span>
+}
+<span class="cls">System</span>.out.<span class="fn">println</span>(<span class="str">"Sum = "</span> + sum); <span class="cmt">// 10</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">3️⃣</span> do-while Loop</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Syntax</span>
+<span class="kw">do</span>
+{
+  <span class="cmt">// body — executes AT LEAST ONCE</span>
+} <span class="kw">while</span>(condition);</div>
+          <div class="info-box"><span class="icon">⭐</span><span>do-while always executes the body <strong>at least once</strong>, even if the condition is initially false.</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">⏩</span> break and continue</div>
+        <div class="section-body">
+          <p><strong>break:</strong> Exits the loop immediately.</p>
+          <p><strong>continue:</strong> Skips the current iteration and moves to the next.</p>
+          <div class="code-block"><span class="code-tag">Example</span>
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>; i<=<span class="num">10</span>; i++) {
+  <span class="kw">if</span>(i==<span class="num">5</span>) <span class="kw">break</span>;    <span class="cmt">// stops at 5</span>
+  <span class="kw">if</span>(i%<span class="num">2</span>==<span class="num">0</span>) <span class="kw">continue</span>; <span class="cmt">// skips even numbers</span>
+  <span class="cls">System</span>.out.<span class="fn">print</span>(i + <span class="str">" "</span>); <span class="cmt">// prints: 1 3</span>
+}</div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is the difference between for and while?", a:"Both are entry-controlled loops. for is used when iterations are known; while is used when iterations depend on a condition." },
+      { q:"What makes do-while unique?", a:"do-while is exit-controlled — the body executes at least once before the condition is checked." },
+      { q:"What does break do in a loop?", a:"break immediately exits the loop (or switch), skipping remaining iterations." },
+      { q:"What does continue do in a loop?", a:"continue skips the rest of the current iteration and jumps to the next iteration of the loop." },
+      { q:"What is an infinite loop?", a:"A loop where the condition never becomes false, causing it to run forever. Example: while(true){}" },
+      { q:"Name the three parts of a for loop.", a:"1. Initialization (int i=1)  2. Condition (i<=5)  3. Update (i++)" },
+    ],
+    quiz:[
+      { q:"Which loop is exit-controlled?", opts:["for","while","do-while","for-each"], ans:2, exp:"do-while is exit-controlled because it checks the condition AFTER executing the body." },
+      { q:"How many times does a do-while loop execute if condition is initially false?", opts:["0 times","1 time","Infinite","2 times"], ans:1, exp:"do-while always executes the body at least once before checking the condition." },
+      { q:"What does 'continue' do?", opts:["Exits the loop","Restarts the program","Skips to next iteration","Breaks the switch"], ans:2, exp:"continue skips the current iteration and jumps to the next one." },
+      { q:"for(int i=1; i<=5; i++) — how many times does this loop run?", opts:["4","5","6","Infinite"], ans:1, exp:"i goes from 1 to 5 inclusive — that's 5 iterations." },
+      { q:"Which is entry-controlled?", opts:["do-while only","for and while","do-while and for","None of these"], ans:1, exp:"Both for and while are entry-controlled loops — condition is checked before each iteration." },
+    ]
+  },
+  {
+    title: "Nested for Loops",
+    subtitle: "Loops within loops — patterns and series",
+    icon: "🔲",
+    topics:["Nested Loop Concept","Square Patterns","Triangle Patterns","Series Calculations","break in Nested"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔲</span> What is a Nested Loop?</div>
+        <div class="section-body">
+          <p>A <strong>nested loop</strong> is a loop inside another loop. The inner loop completes all its iterations for each iteration of the outer loop.</p>
+          <div class="info-box"><span class="icon">💡</span><span>Think of it like a clock: the minute hand (inner loop) completes a full round for each hour (outer loop).</span></div>
+          <div class="tip-box"><span class="icon">📝</span><span><strong>ICSE Scope:</strong> Only nested <em>for</em> loops. Nested while and do-while are <em>exempted</em>.</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔢</span> Rectangular Pattern</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Java — 3×5 Star Rectangle</span>
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>; i<=<span class="num">3</span>; i++) {      <span class="cmt">// rows</span>
+  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">1</span>; j<=<span class="num">5</span>; j++) {    <span class="cmt">// columns</span>
+    <span class="cls">System</span>.out.<span class="fn">print</span>(<span class="str">"* "</span>);
+  }
+  <span class="cls">System</span>.out.<span class="fn">println</span>();          <span class="cmt">// new line after each row</span>
+}
+<span class="cmt">// Output:
+// * * * * *
+// * * * * *
+// * * * * *</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔺</span> Right-Angled Triangle</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Java — Number Triangle</span>
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>; i<=<span class="num">5</span>; i++) {
+  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">1</span>; j<=i; j++) {
+    <span class="cls">System</span>.out.<span class="fn">print</span>(j + <span class="str">" "</span>);
+  }
+  <span class="cls">System</span>.out.<span class="fn">println</span>();
+}
+<span class="cmt">// Output:
+// 1
+// 1 2
+// 1 2 3
+// 1 2 3 4
+// 1 2 3 4 5</span></div>
+          <div class="code-block"><span class="code-tag">Java — Star Triangle</span>
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>; i<=<span class="num">5</span>; i++) {
+  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">1</span>; j<=i; j++) {
+    <span class="cls">System</span>.out.<span class="fn">print</span>(<span class="str">"* "</span>);
+  }
+  <span class="cls">System</span>.out.<span class="fn">println</span>();
+}</div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">Σ</span> Series Calculations</div>
+        <div class="section-body">
+          <div class="code-block"><span class="code-tag">Multiplication Tables 1 to 5</span>
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>; i<=<span class="num">5</span>; i++) {
+  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">1</span>; j<=<span class="num">10</span>; j++) {
+    <span class="cls">System</span>.out.<span class="fn">println</span>(i + <span class="str">" x "</span> + j + <span class="str">" = "</span> + (i*j));
+  }
+}</div>
+          <div class="code-block"><span class="code-tag">First n multiples of numbers 1 to limit</span>
+<span class="kw">int</span> limit = <span class="num">5</span>, n = <span class="num">10</span>;
+<span class="kw">for</span>(<span class="kw">int</span> i=<span class="num">1</span>; i<=limit; i++) {
+  <span class="kw">for</span>(<span class="kw">int</span> j=<span class="num">1</span>; j<=n; j++) {
+    <span class="cls">System</span>.out.<span class="fn">print</span>(i*j + <span class="str">"\t"</span>);
+  }
+  <span class="cls">System</span>.out.<span class="fn">println</span>();
+}</div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"In a nested loop, which completes first — inner or outer?", a:"The inner loop completes ALL its iterations for each single iteration of the outer loop." },
+      { q:"What pattern uses nested loops where inner goes from 1 to i?", a:"A right-angled triangle pattern — each row i has i elements." },
+      { q:"Are nested while and do-while in the ICSE IX syllabus?", a:"No — nested while and nested do-while are EXEMPTED. Only nested for loops are in scope." },
+      { q:"How many total iterations for: for(i=1;i<=3;i++) for(j=1;j<=4;j++)?", a:"3 × 4 = 12 total iterations." },
+      { q:"What statement causes break in nested loops?", a:"break exits only the innermost loop where it is placed, not all loops." },
+    ],
+    quiz:[
+      { q:"In nested loops, the inner loop runs:", opts:["Once per program","Once total","Once per outer loop iteration","Independently"], ans:2, exp:"The inner loop completes all its iterations for every single iteration of the outer loop." },
+      { q:"for(i=1;i<=4;i++) { for(j=1;j<=4;j++) } — Total iterations?", opts:["4","8","16","12"], ans:2, exp:"4 outer × 4 inner = 16 total iterations." },
+      { q:"Which type of triangle is in the ICSE IX scope for nested loops?", opts:["Equilateral","Isoceles","Right-angled only","All types"], ans:2, exp:"The ICSE syllabus specifies right-angled triangle patterns only for nested loops." },
+      { q:"What does break do in a nested loop?", opts:["Exits all loops","Exits only the innermost loop","Exits the outer loop","Continues to next iteration"], ans:1, exp:"break exits only the loop it is directly inside — the innermost loop." },
+    ]
+  },
+  {
+    title: "Ethical Computing",
+    subtitle: "Intellectual property, privacy, cyber ethics",
+    icon: "⚖️",
+    topics:["Intellectual Property","Copyright","Privacy Rights","Spam Protection","Software Piracy","Cyber Ethics","Social Media"],
+    content:`
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">📜</span> Intellectual Property Rights</div>
+        <div class="section-body">
+          <p><strong>Intellectual Property (IP)</strong> refers to creations of the mind — inventions, literary works, designs, software.</p>
+          <p style="margin-top:0.8rem"><strong>Copyright:</strong> Legal protection for original creative works (books, music, software, art). Gives the creator exclusive rights to use, reproduce, and distribute.</p>
+          <p style="margin-top:0.8rem"><strong>Patent:</strong> Legal protection for inventions. Gives the inventor exclusive rights to make, use, or sell an invention for a limited period.</p>
+          <div class="info-box"><span class="icon">💡</span><span>Using someone's software without license, copying music without permission — these violate intellectual property rights!</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🔒</span> Privacy Rights & Data Protection</div>
+        <div class="section-body">
+          <p>Every individual has the right to <strong>privacy</strong> — control over their personal data.</p>
+          <p style="margin-top:0.8rem"><strong>Safety Measures:</strong></p>
+          <ul>
+            <li>Use strong, unique passwords</li>
+            <li>Enable two-factor authentication (2FA)</li>
+            <li>Avoid sharing personal information online unnecessarily</li>
+            <li>Use encrypted connections (HTTPS)</li>
+            <li>Be careful with public Wi-Fi</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Data Protection on the Internet:</strong> Personal data collected by websites should be protected and not misused. Always read privacy policies.</p>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🚫</span> Spam & Software Piracy</div>
+        <div class="section-body">
+          <p><strong>Spam:</strong> Unsolicited bulk messages sent via email or other media.</p>
+          <p style="margin-top:0.5rem"><strong>Protection against Spam:</strong></p>
+          <ul>
+            <li>Use spam filters in email clients</li>
+            <li>Don't share email publicly</li>
+            <li>Never respond to suspicious emails</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Software Piracy:</strong> Unauthorized copying, distributing, or using software without a valid license. This is illegal and unethical.</p>
+          <div class="warn-box"><span class="icon">⚠️</span><span>Software piracy costs the industry billions and harms developers. Always use licensed software!</span></div>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-title"><span class="section-icon">🌐</span> Cyber Ethics & Social Media</div>
+        <div class="section-body">
+          <p><strong>Cyber ethics</strong> refers to the code of responsible behavior on the internet.</p>
+          <ul>
+            <li>Respect others' privacy online</li>
+            <li>Do not spread misinformation or fake news</li>
+            <li>Practice digital etiquette (netiquette)</li>
+            <li>Avoid cyberbullying</li>
+            <li>Give credit to original creators</li>
+          </ul>
+          <p style="margin-top:0.8rem"><strong>Responsible Social Media Use:</strong></p>
+          <ul>
+            <li>Think before you post — the internet is permanent</li>
+            <li>Protect your digital footprint</li>
+            <li>Report harmful content</li>
+            <li>Educate yourself about online safety</li>
+          </ul>
+          <div class="tip-box"><span class="icon">⭐</span><span>A <strong>written project on Ethical Computing</strong> is required for the ICSE Internal Assessment!</span></div>
+        </div>
+      </div>
+    `,
+    flashcards:[
+      { q:"What is copyright?", a:"Legal protection for original creative works giving the creator exclusive rights to use, reproduce, and distribute." },
+      { q:"What is software piracy?", a:"Unauthorized copying, distributing, or using software without a valid license — illegal and unethical." },
+      { q:"What is a patent?", a:"Legal protection for inventions, giving the inventor exclusive rights to make, use, or sell an invention for a limited period." },
+      { q:"What is spam?", a:"Unsolicited bulk messages (usually email) sent to many recipients. Often commercial or malicious." },
+      { q:"What is cyber ethics?", a:"A code of responsible behavior and moral principles for using computers and the internet." },
+      { q:"What is netiquette?", a:"Digital etiquette — proper, respectful behavior while communicating online." },
+    ],
+    quiz:[
+      { q:"Which protects inventions legally?", opts:["Copyright","Patent","Trademark","Trade Secret"], ans:1, exp:"Patents protect inventions. Copyrights protect creative works like books, music, and software." },
+      { q:"Using software without a valid license is called:", opts:["Spam","Hacking","Software Piracy","Copyright Infringement"], ans:2, exp:"Software piracy is the unauthorized copying or use of software without proper licensing." },
+      { q:"Which of these is an example of cyber ethics?", opts:["Sharing passwords","Copying others' work","Respecting others' privacy online","Sending spam"], ans:2, exp:"Respecting others' privacy online is a core aspect of cyber ethics." },
+      { q:"What should you do to protect your data online?", opts:["Use simple passwords","Share your password with friends","Use strong unique passwords + 2FA","Use only public Wi-Fi"], ans:2, exp:"Strong unique passwords combined with two-factor authentication significantly improve data security." },
+      { q:"Spam refers to:", opts:["A type of virus","Unsolicited bulk messages","Illegal software","Hacked accounts"], ans:1, exp:"Spam is unsolicited bulk messages (typically email) sent to many people without their consent." },
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════
+const state = {
+  completedChapters: new Set(),
+  quizScores: {},
+  currentFC: new Array(chapters.length).fill(0),
+  fcFlipped: new Array(chapters.length).fill(false),
+  quizState: chapters.map(() => ({ current:0, score:0, answers:[], done:false }))
+};
+
+// ═══════════════════════════════════════════════
+//  BUILD WELCOME GRID
+// ═══════════════════════════════════════════════
+function buildWelcomeGrid() {
+  const grid = document.getElementById('welcome-grid');
+  chapters.forEach((ch, i) => {
+    const card = document.createElement('div');
+    card.className = 'wg-card';
+    card.innerHTML = `<div class="wg-num">Chapter ${String(i+1).padStart(2,'0')}</div><div style="font-size:1.4rem;margin-bottom:0.4rem">${ch.icon}</div><div class="wg-label">${ch.title}</div>`;
+    card.onclick = () => showChapter(i);
+    grid.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  BUILD CHAPTERS
+// ═══════════════════════════════════════════════
+function buildChapters() {
+  const main = document.querySelector('main');
+  chapters.forEach((ch, ci) => {
+    const div = document.createElement('div');
+    div.id = `chapter-${ci}`;
+    div.className = 'chapter-view';
+
+    const topicChips = ch.topics.map(t => `<span class="topic-chip">${t}</span>`).join('');
+
+    div.innerHTML = `
+      <div class="ch-header">
+        <div class="ch-label">Chapter ${String(ci+1).padStart(2,'0')} / 11</div>
+        <h1 class="ch-title">${ch.icon} <span class="highlight">${ch.title}</span></h1>
+        <p style="color:var(--muted);font-size:0.9rem;margin-bottom:1rem">${ch.subtitle}</p>
+        <div class="ch-overview">${topicChips}</div>
+        <div class="ch-progress-bar"><div class="ch-progress-fill" id="cpf-${ci}" style="width:0%"></div></div>
+        <div class="ch-progress-label"><span>Progress</span><span id="cpl-${ci}">0%</span></div>
+      </div>
+
+      ${ch.content}
+
+      <div class="flashcards-section">
+        <div class="flashcards-title">🃏 Flashcards <span style="color:var(--muted);font-weight:400;font-size:0.85rem">&nbsp;— click card to flip</span></div>
+        <div class="fc-counter" id="fc-counter-${ci}">Card 1 of ${ch.flashcards.length}</div>
+        <div class="fc-wrapper">
+          <div class="flashcard" id="fc-${ci}" onclick="flipCard(${ci})">
+            <div class="fc-inner">
+              <div class="fc-front">
+                <div class="fc-q-label">QUESTION</div>
+                <div class="fc-question" id="fc-q-${ci}">${ch.flashcards[0].q}</div>
+                <div class="fc-hint">👆 Click to reveal answer</div>
+              </div>
+              <div class="fc-back">
+                <div class="fc-a-label">ANSWER</div>
+                <div class="fc-answer" id="fc-a-${ci}">${ch.flashcards[0].a}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fc-controls">
+          <button class="fc-btn" id="fc-prev-${ci}" onclick="fcNav(${ci},-1)" disabled>← Prev</button>
+          <button class="fc-btn primary" onclick="flipCard(${ci})">Flip</button>
+          <button class="fc-btn" id="fc-next-${ci}" onclick="fcNav(${ci},1)">Next →</button>
+        </div>
+      </div>
+
+      <div class="quiz-section" id="quiz-${ci}">
+        <div class="quiz-header">
+          <div class="quiz-title">🧠 Chapter Quiz</div>
+          <div class="quiz-score-badge" id="qsb-${ci}">0 / ${ch.quiz.length}</div>
+        </div>
+        <div class="q-dots" id="qdots-${ci}">
+          ${ch.quiz.map((_,qi) => `<div class="q-dot" id="qdot-${ci}-${qi}"></div>`).join('')}
+        </div>
+        <div id="quiz-body-${ci}"></div>
+      </div>
+
+      <div style="text-align:center">
+        ${ci < chapters.length-1 ? `<button class="next-ch-btn" onclick="showChapter(${ci+1})">Next Chapter: ${chapters[ci+1].icon} ${chapters[ci+1].title} →</button>` : `<div style="padding:2rem;color:var(--accent3);font-weight:700;font-size:1.1rem">🎉 You've completed all 11 chapters!</div>`}
+      </div>
+    `;
+    main.appendChild(div);
+
+    // Build first quiz question
+    renderQuestion(ci, 0);
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER QUIZ QUESTION
+// ═══════════════════════════════════════════════
+function renderQuestion(ci, qi) {
+  const body = document.getElementById(`quiz-body-${ci}`);
+  const ch = chapters[ci];
+  const q = ch.quiz[qi];
+  const qs = state.quizState[ci];
+
+  if (qs.done) { showResult(ci); return; }
+
+  const optLabels = ['A','B','C','D'];
+  const optsHTML = q.opts.map((o, oi) => `
+    <div class="q-opt" id="opt-${ci}-${qi}-${oi}" onclick="answerQ(${ci},${qi},${oi})">
+      <div class="opt-circle">${optLabels[oi]}</div> ${o}
+    </div>
+  `).join('');
+
+  body.innerHTML = `
+    <div class="quiz-q-card" id="qqc-${ci}-${qi}">
+      <div class="q-number">QUESTION ${qi+1} OF ${ch.quiz.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="q-options">${optsHTML}</div>
+      <div class="q-explanation" id="qexp-${ci}-${qi}">${q.exp}</div>
+    </div>
+    <button class="quiz-next-btn" id="qnext-${ci}" onclick="nextQ(${ci},${qi})" style="display:none">
+      ${qi < ch.quiz.length - 1 ? 'Next Question →' : 'See Results 🎯'}
+    </button>
+  `;
+}
+
+function answerQ(ci, qi, chosen) {
+  const ch = chapters[ci];
+  const q = ch.quiz[qi];
+  const qs = state.quizState[ci];
+  if (qs.answers[qi] !== undefined) return;
+
+  qs.answers[qi] = chosen;
+  const correct = chosen === q.ans;
+  if (correct) qs.score++;
+
+  // Update dots
+  const dot = document.getElementById(`qdot-${ci}-${qi}`);
+  dot.classList.add('answered', correct ? 'correct-dot' : 'wrong-dot');
+
+  // Style options
+  for(let i=0;i<q.opts.length;i++){
+    const opt = document.getElementById(`opt-${ci}-${qi}-${i}`);
+    opt.classList.add('disabled');
+    if(i === q.ans) opt.classList.add('correct');
+    else if(i === chosen && !correct) opt.classList.add('wrong');
+  }
+
+  // Show explanation
+  document.getElementById(`qexp-${ci}-${qi}`).classList.add('show');
+  document.getElementById(`qnext-${ci}`).style.display = 'block';
+
+  // Update score badge
+  document.getElementById(`qsb-${ci}`).textContent = `${qs.score} / ${ch.quiz.length}`;
+
+  // Confetti on correct
+  if(correct) {
+    const qCard = document.getElementById(`qqc-${ci}-${qi}`);
+    qCard.classList.add('correct-pulse');
+    launchConfetti(5);
+  }
+
+  // Update progress
+  updateProgress(ci);
+}
+
+function nextQ(ci, qi) {
+  const ch = chapters[ci];
+  const qs = state.quizState[ci];
+  if(qi >= ch.quiz.length - 1) {
+    qs.done = true;
+    showResult(ci);
+    // Mark chapter done if score decent
+    if(qs.score >= Math.ceil(ch.quiz.length * 0.6)) {
+      state.completedChapters.add(ci);
+      document.getElementById(`nav-${ci}`).classList.add('done');
+    }
+    updateOverallProgress();
+  } else {
+    renderQuestion(ci, qi+1);
+    state.quizState[ci].current = qi+1;
+  }
+}
+
+function showResult(ci) {
+  const ch = chapters[ci];
+  const qs = state.quizState[ci];
+  const pct = Math.round((qs.score / ch.quiz.length) * 100);
+  const body = document.getElementById(`quiz-body-${ci}`);
+
+  let cls = pct>=80?'great':pct>=50?'ok':'low';
+  let emoji = pct>=80?'🎉':pct>=50?'👍':'😅';
+  let msg = pct>=80?'Excellent! You mastered this chapter!':pct>=50?'Good effort! Review and try again.':'Keep studying — you can do it!';
+
+  body.innerHTML = `
+    <div class="quiz-result" style="display:block">
+      <div class="result-emoji">${emoji}</div>
+      <div style="font-size:0.85rem;color:var(--muted);margin-bottom:0.3rem">Your Score</div>
+      <div class="result-score ${cls}">${qs.score}/${ch.quiz.length}</div>
+      <div style="font-size:1.5rem;font-weight:700;color:var(--muted);margin-bottom:0.5rem">${pct}%</div>
+      <div class="result-msg">${msg}</div>
+      <button class="retry-btn" onclick="retryQuiz(${ci})">↩ Retry Quiz</button>
+    </div>
+  `;
+
+  if(pct === 100) launchConfetti(30);
+  if(typeof window.trackQuizScore === 'function') {
+    window.trackQuizScore(ci, qs.score, ch.quiz.length);
+  }
+}
+
+function retryQuiz(ci) {
+  state.quizState[ci] = { current:0, score:0, answers:[], done:false };
+  document.getElementById(`qsb-${ci}`).textContent = `0 / ${chapters[ci].quiz.length}`;
+  // Reset dots
+  chapters[ci].quiz.forEach((_,qi) => {
+    const dot = document.getElementById(`qdot-${ci}-${qi}`);
+    dot.className = 'q-dot';
+  });
+  renderQuestion(ci, 0);
+  updateProgress(ci);
+}
+
+// ═══════════════════════════════════════════════
+//  FLASHCARD NAVIGATION
+// ═══════════════════════════════════════════════
+function flipCard(ci) {
+  const fc = document.getElementById(`fc-${ci}`);
+  fc.classList.toggle('flipped');
+  state.fcFlipped[ci] = fc.classList.contains('flipped');
+}
+
+function fcNav(ci, dir) {
+  const ch = chapters[ci];
+  const fc = document.getElementById(`fc-${ci}`);
+  fc.classList.remove('flipped');
+  state.fcFlipped[ci] = false;
+
+  state.currentFC[ci] = Math.max(0, Math.min(ch.flashcards.length-1, state.currentFC[ci]+dir));
+  const idx = state.currentFC[ci];
+
+  document.getElementById(`fc-q-${ci}`).textContent = ch.flashcards[idx].q;
+  document.getElementById(`fc-a-${ci}`).textContent = ch.flashcards[idx].a;
+  document.getElementById(`fc-counter-${ci}`).textContent = `Card ${idx+1} of ${ch.flashcards.length}`;
+  document.getElementById(`fc-prev-${ci}`).disabled = idx===0;
+  document.getElementById(`fc-next-${ci}`).disabled = idx===ch.flashcards.length-1;
+}
+
+// ═══════════════════════════════════════════════
+//  PROGRESS
+// ═══════════════════════════════════════════════
+function updateProgress(ci) {
+  const ch = chapters[ci];
+  const qs = state.quizState[ci];
+  const answered = qs.answers.filter(a => a !== undefined).length;
+  const total = ch.quiz.length + ch.flashcards.length;
+  const fcVisited = state.currentFC[ci] + 1;
+  const pct = Math.min(100, Math.round(((answered + fcVisited) / total) * 100));
+  document.getElementById(`cpf-${ci}`).style.width = pct + '%';
+  document.getElementById(`cpl-${ci}`).textContent = pct + '%';
+}
+
+function updateOverallProgress() {
+  const done = state.completedChapters.size;
+  const pct = Math.round((done / chapters.length) * 100);
+  document.getElementById('overall-fill').style.width = pct + '%';
+  document.getElementById('overall-label').textContent = `${done} / ${chapters.length}`;
+}
+
+// ═══════════════════════════════════════════════
+//  SHOW CHAPTER
+// ═══════════════════════════════════════════════
+function showChapter(id) {
+  document.querySelectorAll('.chapter-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
+
+  if(id === 'welcome') {
+    document.getElementById('chapter-welcome').classList.add('active');
+    document.getElementById('nav-welcome').classList.add('active');
+  } else {
+    document.getElementById(`chapter-${id}`).classList.add('active');
+    document.getElementById(`nav-${id}`).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(typeof window.trackChapterVisit === 'function') {
+      window.trackChapterVisit(id, chapters[id]?.title);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CONFETTI
+// ═══════════════════════════════════════════════
+function launchConfetti(count) {
+  const overlay = document.getElementById('confetti-overlay');
+  const colors = ['#00e5ff','#7c3aed','#10b981','#f59e0b','#ef4444','#fff'];
+  const shapes = ['★','●','◆','▲','♥'];
+  for(let i=0; i<count; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.left = Math.random()*100 + 'vw';
+      el.style.top = '-20px';
+      el.style.color = colors[Math.floor(Math.random()*colors.length)];
+      el.style.fontSize = (10+Math.random()*14) + 'px';
+      el.style.animationDuration = (0.8+Math.random()*0.8) + 's';
+      el.style.animationDelay = Math.random()*0.3 + 's';
+      el.textContent = shapes[Math.floor(Math.random()*shapes.length)];
+      overlay.appendChild(el);
+      setTimeout(() => el.remove(), 2000);
+    }, i * 60);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  PARTICLES
+// ═══════════════════════════════════════════════
+function createParticles() {
+  const container = document.getElementById('particles');
+  for(let i=0; i<40; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = 1 + Math.random()*2;
+    star.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      width:${size}px; height:${size}px;
+      --dur:${2+Math.random()*4}s;
+      --op:${0.2+Math.random()*0.4};
+      animation-delay:${Math.random()*4}s;
+    `;
+    container.appendChild(star);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  TOGGLE SECTIONS
+// ═══════════════════════════════════════════════
+document.addEventListener('click', e => {
+  const th = e.target.closest('.toggle-header');
+  if(th) th.parentElement.classList.toggle('open');
+});
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+createParticles();
+buildWelcomeGrid();
+buildChapters();
+</script>
+
+<!-- ══════════════════════════════════════
+     FIREBASE AUTH GUARD + USER TRACKING
+     ══════════════════════════════════════ -->
+<style>
+#user-badge {
+  margin-left:auto;
+  display:none;
+  align-items:center;
+  gap:0.6rem;
+  cursor:pointer;
+  position:relative;
+}
+#user-avatar {
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,#6366f1,#3b82f6);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;font-weight:700;color:#fff;
+  font-family:"Space Mono",monospace;flex-shrink:0;
+}
+#user-name-badge {
+  font-size:0.78rem;color:#8099bb;
+  max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#user-menu {
+  display:none;position:fixed;top:80px;right:1.5rem;z-index:999;
+  background:#0c1628;border:1px solid #162440;border-radius:12px;
+  padding:0.5rem;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+#user-menu.open{display:block;animation:fadeUpm 0.2s ease}
+@keyframes fadeUpm{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.um-header{padding:0.7rem 0.8rem;border-bottom:1px solid #162440;margin-bottom:0.3rem}
+.um-name{font-weight:700;font-size:0.9rem;color:#e2eaf8}
+.um-email{font-size:0.72rem;color:#4a6080;margin-top:0.15rem}
+.um-item{
+  display:flex;align-items:center;gap:0.6rem;
+  padding:0.6rem 0.8rem;border-radius:8px;
+  font-size:0.83rem;color:#8099bb;cursor:pointer;
+  transition:background 0.15s;
+}
+.um-item:hover{background:#0d1625;color:#e2eaf8}
+.um-item.danger{color:#f87171}
+.um-item.danger:hover{background:rgba(239,68,68,0.1)}
+#auth-loading-overlay{
+  position:fixed;inset:0;z-index:9998;
+  background:#03070f;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1rem;font-family:Outfit,sans-serif;
+}
+.auth-loader-ring{
+  width:40px;height:40px;border-radius:50%;
+  border:3px solid #162440;border-top-color:#3b82f6;
+  animation:spin 0.8s linear infinite;
+}
+</style>
+
+<div id="auth-loading-overlay">
+  <div class="auth-loader-ring"></div>
+  <div style="font-size:0.85rem;color:#4a6080">Verifying session…</div>
+</div>
+
+<script type="module">
+  import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, updateDoc, arrayUnion, serverTimestamp }
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyA6vqWMng8mKnuiclk1SIUZLIrShmTo6YY",
+    authDomain:        "icse-ix-app.firebaseapp.com",
+    projectId:         "icse-ix-app",
+    storageBucket:     "icse-ix-app.firebasestorage.app",
+    messagingSenderId: "32970752586",
+    appId:             "1:32970752586:web:69c5da5b650481a7a51cb3",
+     measurementId: "G-H210YVHNJT"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  let   currentUser = null;
+
+  onAuthStateChanged(auth, user => {
+    document.getElementById("auth-loading-overlay").style.display = "none";
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
+    const badge = document.getElementById("user-badge");
+    if (badge) {
+      badge.style.display = "flex";
+      const name = user.displayName || user.email;
+      document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
+      document.getElementById("user-name-badge").textContent = name.split(" ")[0];
+      document.getElementById("um-name-text").textContent  = name;
+      document.getElementById("um-email-text").textContent = user.email;
+    }
+    try { updateDoc(doc(db,"users",user.uid), { lastLogin: serverTimestamp() }); } catch(e){}
+  });
+
+  window.trackChapterVisit = async function(ci, title) {
+    if (!currentUser) return;
+    try { await updateDoc(doc(db,"users",currentUser.uid), { chaptersVisited: arrayUnion(title) }); } catch(e){}
+  };
+
+  window.trackQuizScore = async function(ci, score, total) {
+    if (!currentUser) return;
+    try {
+      const key = "quizScores.ch" + ci;
+      await updateDoc(doc(db,"users",currentUser.uid), {
+        [key]: { score, total, pct: Math.round(score/total*100), at: new Date().toISOString() }
+      });
+    } catch(e){}
+  };
+
+  window.doSignOut = async function() {
+    await signOut(auth);
+    window.location.href = "index.html";
+  };
+
+  window.showUserMenu = function() {
+    const m = document.getElementById("user-menu");
+    m.classList.toggle("open");
+    document.addEventListener("click", function closeMenu(e) {
+      if (!m.contains(e.target) && !document.getElementById("user-badge").contains(e.target)) {
+        m.classList.remove("open");
+        document.removeEventListener("click", closeMenu);
+      }
+    });
+  };
+<\/script>
+
+</body>
+</html>

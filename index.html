@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ICSE IX — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #03070f;
+    --surface: #080f1e;
+    --card: #0c1628;
+    --border: #162440;
+    --border-glow: #1e3a6e;
+    --accent: #3b82f6;
+    --accent-bright: #60a5fa;
+    --accent2: #6366f1;
+    --success: #10b981;
+    --danger: #ef4444;
+    --text: #e2eaf8;
+    --muted: #4a6080;
+    --muted2: #8099bb;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ── GRID BACKGROUND ── */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+    animation: gridDrift 20s linear infinite;
+  }
+  @keyframes gridDrift { from{background-position:0 0} to{background-position:44px 44px} }
+
+  /* ── ORBS ── */
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(80px); pointer-events: none; z-index: 0;
+  }
+  .orb-1 { width:500px; height:500px; background:rgba(59,130,246,0.07); top:-100px; left:-100px; animation:float1 12s ease-in-out infinite; }
+  .orb-2 { width:400px; height:400px; background:rgba(99,102,241,0.06); bottom:-80px; right:-80px; animation:float2 15s ease-in-out infinite; }
+  .orb-3 { width:250px; height:250px; background:rgba(16,185,129,0.04); top:50%; left:50%; transform:translate(-50%,-50%); animation:float3 10s ease-in-out infinite; }
+  @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,30px)} }
+  @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,-20px)} }
+  @keyframes float3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.3)} }
+
+  /* ── LAYOUT ── */
+  .page {
+    position: relative; z-index: 1;
+    display: flex; width: 100%; min-height: 100vh;
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    flex: 1;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 4rem 5%;
+    display: none;
+  }
+  @media(min-width:900px) { .left-panel { display:flex; } }
+
+  .brand-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(59,130,246,0.1);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent-bright);
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .brand-badge::before { content:''; width:6px; height:6px; background:var(--accent-bright); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .left-title {
+    font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .left-title .blue { color: var(--accent-bright); }
+  .left-title .dim { color: var(--muted2); }
+
+  .left-sub {
+    font-size: 0.95rem; color: var(--muted2);
+    max-width: 380px; line-height: 1.7;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .feature-list { animation: fadeUp 0.6s 0.3s ease both; }
+  .feature-item {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 1rem; font-size: 0.9rem; color: var(--muted2);
+  }
+  .feature-icon {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    background: var(--card); border: 1px solid var(--border);
+  }
+
+  .stats-row {
+    display: flex; gap: 2rem; margin-top: 3rem;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat { }
+  .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--accent-bright); font-family:'Space Mono',monospace; }
+  .stat-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
+
+  /* ── RIGHT PANEL (FORM) ── */
+  .right-panel {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem 1.5rem;
+  }
+  @media(min-width:900px) { .right-panel { width:460px; min-width:460px; } }
+
+  .auth-card {
+    width: 100%; max-width: 420px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: cardIn 0.7s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes cardIn { from{opacity:0;transform:translateY(30px) scale(0.95)} to{opacity:1;transform:none} }
+
+  .auth-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    opacity: 0.6;
+  }
+
+  .card-logo {
+    display: flex; align-items: center; gap: 0.7rem;
+    margin-bottom: 1.8rem;
+  }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-weight: 700; font-size: 0.85rem;
+    color: #fff;
+  }
+  .logo-text { font-size: 0.95rem; font-weight: 700; line-height: 1.2; }
+  .logo-text span { display:block; font-size:0.7rem; color:var(--muted); font-weight:400; }
+
+  /* ── TABS ── */
+  .tab-bar {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 1.8rem;
+    gap: 4px;
+  }
+  .tab-btn {
+    flex: 1; border: none; background: none; cursor: pointer;
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--muted); padding: 0.6rem;
+    border-radius: 7px; transition: all 0.25s;
+  }
+  .tab-btn.active {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.35);
+  }
+
+  /* ── FORM ── */
+  .form-panel { display: none; }
+  .form-panel.active { display: block; animation: panelIn 0.35s ease; }
+  @keyframes panelIn { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:none} }
+
+  .form-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .form-sub { font-size: 0.83rem; color: var(--muted); margin-bottom: 1.6rem; }
+
+  .field { margin-bottom: 1rem; }
+  .field-label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    color: var(--muted2); margin-bottom: 0.45rem;
+    letter-spacing: 0.5px;
+  }
+  .field-wrap { position: relative; }
+  .field-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 0.9rem; pointer-events: none; opacity: 0.5;
+  }
+  .field input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 0.9rem 0.75rem 2.5rem;
+    font-family: 'Syne', sans-serif; font-size: 0.88rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input::placeholder { color: var(--muted); }
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+  }
+  .field input.error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+
+  /* Password toggle */
+  .pw-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--muted); font-size: 0.85rem; padding: 4px;
+    transition: color 0.2s;
+  }
+  .pw-toggle:hover { color: var(--text); }
+
+  /* Password strength */
+  .pw-strength { margin-top: 0.4rem; }
+  .pw-bars { display: flex; gap: 3px; margin-bottom: 0.3rem; }
+  .pw-bar { flex: 1; height: 3px; background: var(--border); border-radius: 3px; transition: background 0.3s; }
+  .pw-bar.weak { background: var(--danger); }
+  .pw-bar.ok { background: var(--accent); }
+  .pw-bar.strong { background: var(--success); }
+  .pw-hint { font-size: 0.7rem; color: var(--muted); }
+
+  /* ── SUBMIT BTN ── */
+  .submit-btn {
+    width: 100%; padding: 0.85rem;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none; border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem;
+    color: #fff; cursor: pointer; margin-top: 0.5rem;
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,0.3); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .submit-btn .btn-text { transition: opacity 0.2s; }
+  .submit-btn .btn-spinner { display:none; position:absolute; inset:0; align-items:center; justify-content:center; }
+  .submit-btn.loading .btn-text { opacity: 0; }
+  .submit-btn.loading .btn-spinner { display:flex; }
+  .spinner { width:18px; height:18px; border:2px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin 0.7s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* ── ALERT ── */
+  .alert {
+    display: none; align-items: flex-start; gap: 0.6rem;
+    padding: 0.75rem 1rem; border-radius: 9px;
+    font-size: 0.82rem; margin-bottom: 1rem;
+    animation: fadeUp 0.3s ease;
+  }
+  .alert.show { display: flex; }
+  .alert.error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+  .alert.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #6ee7b7; }
+  .alert-icon { flex-shrink: 0; font-size: 1rem; margin-top: 0.05rem; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin: 1.2rem 0; color: var(--muted); font-size: 0.75rem;
+  }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── GOOGLE BTN ── */
+  .google-btn {
+    width: 100%; padding: 0.75rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .google-btn:hover { border-color: var(--border-glow); background: var(--bg); }
+  .google-icon { font-size: 1.1rem; }
+
+  /* ── FOOTER ── */
+  .card-footer { text-align: center; margin-top: 1.4rem; font-size: 0.78rem; color: var(--muted); }
+  .card-footer a { color: var(--accent-bright); text-decoration: none; font-weight: 600; }
+  .card-footer a:hover { text-decoration: underline; }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    display: none; text-align: center; padding: 1rem 0;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes popIn { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+  .success-check {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: rgba(16,185,129,0.15); border: 2px solid var(--success);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; margin: 0 auto 1rem;
+    animation: checkPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+  }
+  @keyframes checkPop { from{transform:scale(0)} to{transform:scale(1)} }
+  .success-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 0.4rem; }
+  .success-sub { font-size: 0.85rem; color: var(--muted); }
+  .redirect-bar {
+    margin-top: 1.5rem;
+    height: 3px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .redirect-fill { height: 100%; background: var(--success); animation: fillBar 2.5s linear forwards; border-radius: 3px; }
+  @keyframes fillBar { from{width:0%} to{width:100%} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+
+  /* terms checkbox */
+  .check-row {
+    display: flex; align-items: flex-start; gap: 0.6rem;
+    margin-bottom: 1rem; font-size: 0.78rem; color: var(--muted2);
+    cursor: pointer;
+  }
+  .check-row input[type=checkbox] { margin-top: 2px; accent-color: var(--accent); cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="page">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand-badge">ICSE · CLASS IX · 2028</div>
+    <h1 class="left-title">
+      Learn Java.<br>
+      <span class="blue">Ace your</span><br>
+      <span class="dim">ICSE exams.</span>
+    </h1>
+    <p class="left-sub">
+      Interactive lessons, flashcards & quizzes covering all 11 chapters of the ICSE Class IX Computer Applications syllabus.
+    </p>
+    <div class="feature-list">
+      <div class="feature-item">
+        <div class="feature-icon">📚</div>
+        <span>11 complete chapters with Java code examples</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🃏</div>
+        <span>Flashcards with instant flip animations</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🧠</div>
+        <span>Chapter quizzes with score tracking</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">📊</div>
+        <span>Your progress saved across sessions</span>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">11</div>
+        <div class="stat-label">CHAPTERS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">70+</div>
+        <div class="stat-label">FLASHCARDS</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">50+</div>
+        <div class="stat-label">QUIZ QUESTIONS</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="auth-card">
+
+      <div class="card-logo">
+        <div class="logo-mark">IX</div>
+        <div class="logo-text">
+          ICSE Computer Applications
+          <span>Class IX · Java</span>
+        </div>
+      </div>
+
+      <!-- SUCCESS SCREEN -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-check">✓</div>
+        <div class="success-title" id="success-title">Welcome aboard!</div>
+        <div class="success-sub" id="success-sub">Redirecting you to your lessons…</div>
+        <div class="redirect-bar"><div class="redirect-fill"></div></div>
+      </div>
+
+      <!-- AUTH FORMS -->
+      <div id="auth-forms">
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('login')">Sign In</button>
+          <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="form-panel active" id="panel-login">
+          <div class="form-title">Welcome back 👋</div>
+          <div class="form-sub">Sign in to continue your learning journey.</div>
+
+          <div class="alert error" id="login-error">
+            <span class="alert-icon">⚠️</span><span id="login-error-msg"></span>
+          </div>
+
+          <div class="field">
+            <label class="field-label">EMAIL ADDRESS</label>
+            <div class="field-wrap">
+              <span class="field-icon">✉️</span>
+              <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">PASSWORD</label>
+            <div class="field-wrap">
+              <span class="field-icon">🔑</span>
+              <input type="password" id="login-password" placeholder="Your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+              <button class="pw-toggle" onclick="togglePw('login-password',this)">👁</button>
+            </div>
+          </div>
+          <div style="text-align:right;margin:-0.4rem 0 1rem">
+            <a href="#" onclick="doReset()" style="font-size:0.78rem;color:var(--accent-bright);text-decoration:none">Forgot password?</a>
+          </div>
+
+          <button class="submit-btn" id="login-btn" onclick="doLogin()">
+            <span class="btn-text">Sign In →</span>
+            <span class="btn-spinner"><div class="spinner"></div></span>
+          </button>
+
+          <div class="divider">or continue with</div>
+          <button class="google-btn" onclick="doGoogle()">
+            <span class="google-icon">🔵</span> Continue with Google
+          </button>
+        </div>
+
+        <!-- SIGN UP -->
+        <div class="form-panel" id="panel-signup">
+          <div class="form-title">Create account ✨</div>
+          <div class="form-sub">Join hundreds of ICSE students learning Java.</div>
+
+          <div class="alert error" id="signup-error">
+            <span class="alert-icon">⚠️</span><span id="signup-error-msg"></span>
+          </div>
+
+          <div class="field">
+            <label class="field-label">FULL NAME</label>
+            <div class="field-wrap">
+              <span class="field-icon">👤</span>
+              <input type="text" id="signup-name" placeholder="Rahul Sharma" autocomplete="name">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">EMAIL ADDRESS</label>
+            <div class="field-wrap">
+              <span class="field-icon">✉️</span>
+              <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">PASSWORD</label>
+            <div class="field-wrap">
+              <span class="field-icon">🔑</span>
+              <input type="password" id="signup-password" placeholder="Min. 6 characters" autocomplete="new-password" oninput="checkPwStrength(this.value)" onkeydown="if(event.key==='Enter')doSignup()">
+              <button class="pw-toggle" onclick="togglePw('signup-password',this)">👁</button>
+            </div>
+            <div class="pw-strength">
+              <div class="pw-bars">
+                <div class="pw-bar" id="pb1"></div>
+                <div class="pw-bar" id="pb2"></div>
+                <div class="pw-bar" id="pb3"></div>
+                <div class="pw-bar" id="pb4"></div>
+              </div>
+              <div class="pw-hint" id="pw-hint">Enter a password</div>
+            </div>
+          </div>
+
+          <label class="check-row">
+            <input type="checkbox" id="terms-check">
+            I agree to the terms of use and privacy policy
+          </label>
+
+          <button class="submit-btn" id="signup-btn" onclick="doSignup()">
+            <span class="btn-text">Create Account →</span>
+            <span class="btn-spinner"><div class="spinner"></div></span>
+          </button>
+
+          <div class="divider">or continue with</div>
+          <button class="google-btn" onclick="doGoogle()">
+            <span class="google-icon">🔵</span> Continue with Google
+          </button>
+        </div>
+      </div><!-- /#auth-forms -->
+
+      <div class="card-footer">
+        Secure authentication powered by <a href="https://firebase.google.com" target="_blank">Firebase</a>
+      </div>
+
+    </div>
+  </div><!-- /.right-panel -->
+
+</div><!-- /.page -->
+
+
+<!-- ══════════════════════════════════════════
+     FIREBASE SDK  (v10 modular, compat layer)
+     Replace the firebaseConfig below with
+     YOUR actual config from Firebase Console
+     ══════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+           GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail,
+           updateProfile }          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, updateDoc, serverTimestamp, getDoc }
+                                    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ╔═══════════════════════════════════════════╗
+  // ║  REPLACE THIS WITH YOUR FIREBASE CONFIG   ║
+  // ╚═══════════════════════════════════════════╝
+  const firebaseConfig = {
+    apiKey:            "AIzaSyA6vqWMng8mKnuiclk1SIUZLIrShmTo6YY",
+    authDomain:        "icse-ix-app.firebaseapp.com",
+    projectId:         "icse-ix-app",
+    storageBucket:     "icse-ix-app.firebasestorage.app",
+    messagingSenderId: "32970752586",
+    appId:             "1:32970752586:web:69c5da5b650481a7a51cb3",
+     measurementId: "G-H210YVHNJT"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+  const googleProvider = new GoogleAuthProvider();
+
+  // ── Redirect if already logged in ──
+  auth.onAuthStateChanged(user => {
+    if (user) redirectToApp();
+  });
+
+  // ── Save / update user record in Firestore ──
+  async function saveUser(user, extraName) {
+    const ref  = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) {
+      await setDoc(ref, {
+        uid:          user.uid,
+        name:         extraName || user.displayName || "Student",
+        email:        user.email,
+        createdAt:    serverTimestamp(),
+        lastLogin:    serverTimestamp(),
+        totalLogins:  1,
+        chaptersVisited: [],
+        quizScores:   {}
+      });
+    } else {
+      await updateDoc(ref, {
+        lastLogin:   serverTimestamp(),
+        totalLogins: (snap.data().totalLogins || 0) + 1
+      });
+    }
+  }
+
+  function redirectToApp() {
+    showSuccess();
+    setTimeout(() => { window.location.href = "app.html"; }, 2500);
+  }
+
+  function showSuccess(name) {
+    document.getElementById('auth-forms').style.display = 'none';
+    const s = document.getElementById('success-screen');
+    s.style.display = 'block';
+    if(name) document.getElementById('success-title').textContent = `Welcome, ${name}! 🎉`;
+  }
+
+  function setLoading(btnId, on) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = on;
+    btn.classList.toggle('loading', on);
+  }
+
+  function showError(panelId, msg) {
+    document.getElementById(panelId+'-error').classList.add('show');
+    document.getElementById(panelId+'-error-msg').textContent = msg;
+  }
+  function clearError(panelId) {
+    document.getElementById(panelId+'-error').classList.remove('show');
+  }
+
+  function friendlyError(code) {
+    const map = {
+      'auth/email-already-in-use':   'This email is already registered. Please sign in.',
+      'auth/invalid-email':           'Please enter a valid email address.',
+      'auth/weak-password':           'Password must be at least 6 characters.',
+      'auth/user-not-found':          'No account found with this email.',
+      'auth/wrong-password':          'Incorrect password. Please try again.',
+      'auth/too-many-requests':       'Too many attempts. Please wait and try again.',
+      'auth/popup-closed-by-user':    'Google sign-in was cancelled.',
+      'auth/invalid-credential':      'Invalid email or password.'
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+
+  // ══════════════════════════
+  //  LOGIN
+  // ══════════════════════════
+  window.doLogin = async function() {
+    clearError('login');
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    if (!email || !password) { showError('login','Please fill in all fields.'); return; }
+    setLoading('login-btn', true);
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      await saveUser(cred.user);
+      redirectToApp();
+    } catch(e) {
+      showError('login', friendlyError(e.code));
+      setLoading('login-btn', false);
+    }
+  };
+
+  // ══════════════════════════
+  //  SIGN UP
+  // ══════════════════════════
+  window.doSignup = async function() {
+    clearError('signup');
+    const name     = document.getElementById('signup-name').value.trim();
+    const email    = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const terms    = document.getElementById('terms-check').checked;
+    if (!name)     { showError('signup','Please enter your name.'); return; }
+    if (!email)    { showError('signup','Please enter your email.'); return; }
+    if (password.length < 6) { showError('signup','Password must be at least 6 characters.'); return; }
+    if (!terms)    { showError('signup','Please accept the terms to continue.'); return; }
+    setLoading('signup-btn', true);
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(cred.user, { displayName: name });
+      await saveUser(cred.user, name);
+      showSuccess(name);
+      setTimeout(() => { window.location.href = "app.html"; }, 2500);
+    } catch(e) {
+      showError('signup', friendlyError(e.code));
+      setLoading('signup-btn', false);
+    }
+  };
+
+  // ══════════════════════════
+  //  GOOGLE
+  // ══════════════════════════
+  window.doGoogle = async function() {
+    try {
+      const cred = await signInWithPopup(auth, googleProvider);
+      await saveUser(cred.user);
+      redirectToApp();
+    } catch(e) {
+      const panel = document.getElementById('panel-login').classList.contains('active') ? 'login' : 'signup';
+      showError(panel, friendlyError(e.code));
+    }
+  };
+
+  // ══════════════════════════
+  //  PASSWORD RESET
+  // ══════════════════════════
+  window.doReset = async function() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) { showError('login','Enter your email above first.'); return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      document.getElementById('login-error').className = 'alert success show';
+      document.getElementById('login-error-msg').textContent = 'Reset email sent! Check your inbox.';
+    } catch(e) {
+      showError('login', friendlyError(e.code));
+    }
+  };
+</script>
+
+<script>
+  // ── Tab switching ──
+  function switchTab(tab) {
+    ['login','signup'].forEach(t => {
+      document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+      document.querySelectorAll('.tab-btn').forEach((b,i) => {
+        b.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='signup'));
+      });
+    });
+  }
+
+  // ── Password visibility toggle ──
+  function togglePw(inputId, btn) {
+    const inp = document.getElementById(inputId);
+    if (inp.type === 'password') { inp.type='text'; btn.textContent='🙈'; }
+    else { inp.type='password'; btn.textContent='👁'; }
+  }
+
+  // ── Password strength meter ──
+  function checkPwStrength(pw) {
+    const bars  = [document.getElementById('pb1'),document.getElementById('pb2'),document.getElementById('pb3'),document.getElementById('pb4')];
+    const hint  = document.getElementById('pw-hint');
+    bars.forEach(b => b.className = 'pw-bar');
+    let score = 0;
+    if (pw.length >= 6)                          score++;
+    if (pw.length >= 10)                         score++;
+    if (/[A-Z]/.test(pw) && /[0-9]/.test(pw))   score++;
+    if (/[^A-Za-z0-9]/.test(pw))                score++;
+    const cls   = score<=1?'weak':score<=2?'ok':'strong';
+    const labels= ['','Weak','Fair','Strong','Very Strong'];
+    for(let i=0; i<score; i++) bars[i].classList.add(cls);
+    hint.textContent = pw.length ? labels[score] || 'Very Strong' : 'Enter a password';
+    hint.style.color = score<=1?'var(--danger)':score<=2?'var(--accent)':'var(--success)';
+  }
+</script>
+</body>
+</html>
