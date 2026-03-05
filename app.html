@@ -648,17 +648,16 @@
     <div class="logo-badge">ICSE</div>
     <div class="header-title">Class IX — <span>Computer Applications</span></div>
     
-    <div id="user-badge" style="display:none">
-      <div id="user-avatar"></div>
-      <span id="user-name-badge"></span>
+    <div id="user-badge" style="display:none;align-items:center;gap:0.6rem;cursor:pointer;margin-left:auto" onclick="showUserMenu()">
+      <div id="user-avatar" style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:#fff;font-family:Space Mono,monospace;flex-shrink:0"></div>
+      <span id="user-name-badge" style="font-size:0.78rem;color:#8099bb;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
     </div>
-    <div id="user-menu">
-      <div class="um-header">
-        <div class="um-name" id="um-name-text"></div>
-        <div class="um-email" id="um-email-text"></div>
+    <div id="user-menu" style="display:none;position:fixed;top:80px;right:1.5rem;z-index:999;background:#0c1628;border:1px solid #162440;border-radius:12px;padding:0.5rem;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,0.5)">
+      <div style="padding:0.7rem 0.8rem;border-bottom:1px solid #162440;margin-bottom:0.3rem">
+        <div id="um-name-text" style="font-weight:700;font-size:0.9rem;color:#e2eaf8"></div>
+        <div id="um-email-text" style="font-size:0.72rem;color:#4a6080;margin-top:0.1rem"></div>
       </div>
-      <div class="um-item" onclick="window.location.href='index.html'">📊 My Progress</div>
-      <div class="um-item danger" onclick="doSignOut()">↩ Sign Out</div>
+      <div onclick="doSignOut()" style="display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.8rem;border-radius:8px;font-size:0.83rem;color:#f87171;cursor:pointer" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='none'">↩ Sign Out</div>
     </div>
 <div class="overall-progress">
       <span id="overall-label">0 / 11</span>
@@ -1827,9 +1826,7 @@ function showResult(ci) {
   `;
 
   if(pct === 100) launchConfetti(30);
-  if(typeof window.trackQuizScore === 'function') {
-    window.trackQuizScore(ci, qs.score, ch.quiz.length);
-  }
+  if(typeof window.trackQuizScore==='function') window.trackQuizScore(ci, qs.score, ch.quiz.length);
 }
 
 function retryQuiz(ci) {
@@ -1904,9 +1901,7 @@ function showChapter(id) {
     document.getElementById(`chapter-${id}`).classList.add('active');
     document.getElementById(`nav-${id}`).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
-    if(typeof window.trackChapterVisit === 'function') {
-      window.trackChapterVisit(id, chapters[id]?.title);
-    }
+    if(typeof window.trackChapterVisit==='function') window.trackChapterVisit(id, chapters[id]?.title);
   }
 }
 
@@ -1971,187 +1966,92 @@ buildWelcomeGrid();
 buildChapters();
 </script>
 
-<!-- ══════════════════════════════════════
-     FIREBASE AUTH GUARD + USER TRACKING
-     ══════════════════════════════════════ -->
-<style>
-#user-badge {
-  margin-left:auto;
-  display:none;
-  align-items:center;
-  gap:0.6rem;
-  cursor:pointer;
-  position:relative;
-}
-#user-avatar {
-  width:30px;height:30px;border-radius:50%;
-  background:linear-gradient(135deg,#6366f1,#3b82f6);
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.75rem;font-weight:700;color:#fff;
-  font-family:"Space Mono",monospace;flex-shrink:0;
-}
-#user-name-badge {
-  font-size:0.78rem;color:#8099bb;
-  max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-#user-menu {
-  display:none;position:fixed;top:80px;right:1.5rem;z-index:999;
-  background:#0c1628;border:1px solid #162440;border-radius:12px;
-  padding:0.5rem;min-width:220px;box-shadow:0 8px 32px rgba(0,0,0,0.5);
-}
-#user-menu.open{display:block;animation:fadeUpm 0.2s ease}
-@keyframes fadeUpm{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
-.um-header{padding:0.7rem 0.8rem;border-bottom:1px solid #162440;margin-bottom:0.3rem}
-.um-name{font-weight:700;font-size:0.9rem;color:#e2eaf8}
-.um-email{font-size:0.72rem;color:#4a6080;margin-top:0.15rem}
-.um-item{
-  display:flex;align-items:center;gap:0.6rem;
-  padding:0.6rem 0.8rem;border-radius:8px;
-  font-size:0.83rem;color:#8099bb;cursor:pointer;
-  transition:background 0.15s;
-}
-.um-item:hover{background:#0d1625;color:#e2eaf8}
-.um-item.danger{color:#f87171}
-.um-item.danger:hover{background:rgba(239,68,68,0.1)}
-#auth-loading-overlay{
-  position:fixed;inset:0;z-index:9998;
-  background:#03070f;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:1rem;font-family:Outfit,sans-serif;
-}
-.auth-loader-ring{
-  width:40px;height:40px;border-radius:50%;
-  border:3px solid #162440;border-top-color:#3b82f6;
-  animation:spin 0.8s linear infinite;
-}
-</style>
+<script type="module">
+  /* ── SILENT BACKGROUND TRACKER ──
+     App opens freely for everyone.
+     If the user is logged in via index.html,
+     their activity is tracked in Firestore.     */
+  import { initializeApp, getApps }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, updateDoc, arrayUnion, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<div id="auth-loading-overlay">
-  <div class="auth-loader-ring" id="auth-spinner"></div>
-  <div id="auth-status-msg" style="font-size:0.85rem;color:#4a6080;font-family:Outfit,sans-serif;text-align:center;max-width:320px;line-height:1.6;padding:0 1rem">Verifying session…</div>
-  <div id="auth-error-box" style="display:none;margin-top:1rem;background:#1a0a0a;border:1px solid #7f1d1d;border-radius:10px;padding:1rem 1.5rem;max-width:360px;font-size:0.8rem;color:#fca5a5;font-family:monospace;word-break:break-all;text-align:left"></div>
-  <button id="auth-bypass-btn" onclick="bypassAuth()" style="display:none;margin-top:1.2rem;background:#162440;border:1px solid #1e3a6e;color:#60a5fa;font-family:Outfit,sans-serif;font-size:0.85rem;padding:0.6rem 1.5rem;border-radius:8px;cursor:pointer">
-    Open App Anyway (Local Testing)
-  </button>
-  <a href="index.html" id="auth-login-link" style="display:none;margin-top:0.7rem;color:#4a6080;font-size:0.78rem;font-family:Outfit,sans-serif;text-decoration:none">← Back to Login</a>
-</div>
-
-<script>
-  // Bypass for local file testing
-  window.bypassAuth = function() {
-    document.getElementById("auth-loading-overlay").style.display = "none";
+  const firebaseConfig = {
+    apiKey:            "AIzaSyA6vqWMng8mKnuiclk1SIUZLIrShmTo6YY",
+    authDomain:        "icse-ix-app.firebaseapp.com",
+    projectId:         "icse-ix-app",
+    storageBucket:     "icse-ix-app.firebasestorage.app",
+    messagingSenderId: "32970752586",
+    appId:             "1:32970752586:web:69c5da5b650481a7a51cb3"
   };
 
-  function setAuthMsg(msg, isError) {
-    const el = document.getElementById("auth-status-msg");
-    if (el) el.textContent = msg;
-    if (isError) {
-      const sp = document.getElementById("auth-spinner");
-      if (sp) sp.style.borderTopColor = "#ef4444";
-    }
-  }
+  let currentUser = null;
 
-  function showAuthError(title, detail) {
-    document.getElementById("auth-spinner").style.display = "none";
-    document.getElementById("auth-status-msg").innerHTML =
-      "<strong style='color:#fca5a5'>" + title + "</strong>";
-    const box = document.getElementById("auth-error-box");
-    box.textContent = detail;
-    box.style.display = "block";
-    document.getElementById("auth-bypass-btn").style.display = "block";
-    document.getElementById("auth-login-link").style.display = "block";
-  }
+  try {
+    const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
 
-  // Check if running on file:// protocol
-  if (window.location.protocol === "file:") {
-    showAuthError(
-      "Cannot run Firebase on local files.",
-      "You are opening this as a local file (file://). Firebase auth requires a real web server. Either upload to GitHub Pages, or use VS Code Live Server extension to test locally. Click 'Open App Anyway' to preview without auth."
-    );
-  } else {
-    // Load Firebase dynamically
-    setAuthMsg("Connecting to Firebase…");
+    onAuthStateChanged(auth, user => {
+      if (!user) return; // not logged in — app still works, just no tracking
+      currentUser = user;
 
-    import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(({ initializeApp, getApps }) => {
-      return Promise.all([
-        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"),
-        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
-      ]).then(([authMod, dbMod]) => {
+      // Show user badge in top-right
+      const badge = document.getElementById("user-badge");
+      if (badge) {
+        badge.style.display = "flex";
+        const name = user.displayName || user.email || "Student";
+        document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("user-name-badge").textContent = name.split(" ")[0];
+        document.getElementById("um-name-text").textContent  = name;
+        document.getElementById("um-email-text").textContent = user.email;
+      }
 
-        setAuthMsg("Checking session…");
-
-        const firebaseConfig = {
-          apiKey:            "AIzaSyA6vqWMng8mKnuiclk1SIUZLIrShmTo6YY",
-          authDomain:        "icse-ix-app.firebaseapp.com",
-          projectId:         "icse-ix-app",
-          storageBucket:     "icse-ix-app.firebasestorage.app",
-          messagingSenderId: "32970752586",
-          appId:             "1:32970752586:web:69c5da5b650481a7a51cb3"
-        };
-
-        const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-        const auth = authMod.getAuth(app);
-        const db   = dbMod.getFirestore(app);
-        let currentUser = null;
-
-        // 10 second safety net
-        const timer = setTimeout(() => {
-          showAuthError(
-            "Firebase timed out.",
-            "Could not connect to Firebase after 10 seconds. Possible causes: (1) Your GitHub Pages domain is not added to Firebase Authorized Domains. (2) Email/Password sign-in is not enabled in Firebase Console. (3) Network/firewall issue."
-          );
-        }, 10000);
-
-        authMod.onAuthStateChanged(auth, user => {
-          clearTimeout(timer);
-          if (!user) {
-            setAuthMsg("Not signed in — redirecting…");
-            setTimeout(() => { window.location.href = "index.html"; }, 1000);
-            return;
-          }
-          currentUser = user;
-          document.getElementById("auth-loading-overlay").style.display = "none";
-
-          const badge = document.getElementById("user-badge");
-          if (badge) {
-            badge.style.display = "flex";
-            const name = user.displayName || user.email || "Student";
-            document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
-            document.getElementById("user-name-badge").textContent = name.split(" ")[0];
-            document.getElementById("um-name-text").textContent  = name;
-            document.getElementById("um-email-text").textContent = user.email;
-          }
-          try { dbMod.updateDoc(dbMod.doc(db,"users",user.uid), { lastLogin: dbMod.serverTimestamp() }); } catch(e){}
-        }, err => {
-          clearTimeout(timer);
-          showAuthError("Firebase Auth Error", err.code + ": " + err.message);
-        });
-
-        window.trackChapterVisit = async (ci, title) => {
-          if (!currentUser) return;
-          try { await dbMod.updateDoc(dbMod.doc(db,"users",currentUser.uid), { chaptersVisited: dbMod.arrayUnion(title) }); } catch(e){}
-        };
-        window.trackQuizScore = async (ci, score, total) => {
-          if (!currentUser) return;
-          try { await dbMod.updateDoc(dbMod.doc(db,"users",currentUser.uid), { ["quizScores.ch"+ci]: { score, total, pct: Math.round(score/total*100) } }); } catch(e){}
-        };
-        window.doSignOut = async () => {
-          try { await authMod.signOut(auth); } catch(e){}
-          window.location.href = "index.html";
-        };
-        window.showUserMenu = () => {
-          const m = document.getElementById("user-menu");
-          m.classList.toggle("open");
-        };
-      });
-    }).catch(err => {
-      showAuthError(
-        "Failed to load Firebase SDK.",
-        "Error: " + err.message + ". This usually means no internet connection, or a browser extension (like an ad blocker) is blocking Firebase. Try disabling extensions or use a different browser."
-      );
+      // Record login silently
+      try { updateDoc(doc(db,"users",user.uid), { lastLogin: serverTimestamp() }); } catch(e){}
     });
+
+    window.trackChapterVisit = async (ci, title) => {
+      if (!currentUser) return;
+      try { await updateDoc(doc(db,"users",currentUser.uid), { chaptersVisited: arrayUnion(title) }); } catch(e){}
+    };
+
+    window.trackQuizScore = async (ci, score, total) => {
+      if (!currentUser) return;
+      try {
+        await updateDoc(doc(db,"users",currentUser.uid), {
+          ["quizScores.ch"+ci]: { score, total, pct: Math.round(score/total*100), at: new Date().toISOString() }
+        });
+      } catch(e){}
+    };
+
+    window.doSignOut = async () => {
+      try { await signOut(auth); } catch(e){}
+      window.location.href = "index.html";
+    };
+
+    window.showUserMenu = () => {
+      const m = document.getElementById("user-menu");
+      if (!m) return;
+      const isOpen = m.style.display === "block";
+      m.style.display = isOpen ? "none" : "block";
+      if (!isOpen) {
+        setTimeout(() => {
+          document.addEventListener("click", function closeMenu(e) {
+            if (!m.contains(e.target) && !document.getElementById("user-badge").contains(e.target)) {
+              m.style.display = "none";
+              document.removeEventListener("click", closeMenu);
+            }
+          });
+        }, 10);
+      }
+    };
+
+  } catch(e) {
+    console.warn("Firebase silent tracker skipped:", e.message);
   }
 </script>
-
 </body>
 </html>
