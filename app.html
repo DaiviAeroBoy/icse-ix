@@ -2027,108 +2027,131 @@ buildChapters();
 </style>
 
 <div id="auth-loading-overlay">
-  <div class="auth-loader-ring"></div>
-  <div style="font-size:0.85rem;color:#4a6080">Verifying session…</div>
+  <div class="auth-loader-ring" id="auth-spinner"></div>
+  <div id="auth-status-msg" style="font-size:0.85rem;color:#4a6080;font-family:Outfit,sans-serif;text-align:center;max-width:320px;line-height:1.6;padding:0 1rem">Verifying session…</div>
+  <div id="auth-error-box" style="display:none;margin-top:1rem;background:#1a0a0a;border:1px solid #7f1d1d;border-radius:10px;padding:1rem 1.5rem;max-width:360px;font-size:0.8rem;color:#fca5a5;font-family:monospace;word-break:break-all;text-align:left"></div>
+  <button id="auth-bypass-btn" onclick="bypassAuth()" style="display:none;margin-top:1.2rem;background:#162440;border:1px solid #1e3a6e;color:#60a5fa;font-family:Outfit,sans-serif;font-size:0.85rem;padding:0.6rem 1.5rem;border-radius:8px;cursor:pointer">
+    Open App Anyway (Local Testing)
+  </button>
+  <a href="index.html" id="auth-login-link" style="display:none;margin-top:0.7rem;color:#4a6080;font-size:0.78rem;font-family:Outfit,sans-serif;text-decoration:none">← Back to Login</a>
 </div>
 
-<script type="module">
-  import { initializeApp, getApps }
-                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut }
-                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, updateDoc, arrayUnion, serverTimestamp }
-                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey:            "AIzaSyA6vqWMng8mKnuiclk1SIUZLIrShmTo6YY",
-    authDomain:        "icse-ix-app.firebaseapp.com",
-    projectId:         "icse-ix-app",
-    storageBucket:     "icse-ix-app.firebasestorage.app",
-    messagingSenderId: "32970752586",
-    appId:             "1:32970752586:web:69c5da5b650481a7a51cb3"
+<script>
+  // Bypass for local file testing
+  window.bypassAuth = function() {
+    document.getElementById("auth-loading-overlay").style.display = "none";
   };
 
-  function hideOverlay() {
-    const ov = document.getElementById("auth-loading-overlay");
-    if (ov) ov.style.display = "none";
+  function setAuthMsg(msg, isError) {
+    const el = document.getElementById("auth-status-msg");
+    if (el) el.textContent = msg;
+    if (isError) {
+      const sp = document.getElementById("auth-spinner");
+      if (sp) sp.style.borderTopColor = "#ef4444";
+    }
   }
 
-  // Safety timeout — if Firebase never responds in 8s, redirect to login
-  const safetyTimer = setTimeout(() => {
-    hideOverlay();
-    window.location.href = "index.html";
-  }, 8000);
-
-  let app, auth, db, currentUser = null;
-
-  try {
-    // Prevent duplicate app error
-    app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db   = getFirestore(app);
-
-    onAuthStateChanged(auth, user => {
-      clearTimeout(safetyTimer);
-      hideOverlay();
-      if (!user) {
-        window.location.href = "index.html";
-        return;
-      }
-      currentUser = user;
-      const badge = document.getElementById("user-badge");
-      if (badge) {
-        badge.style.display = "flex";
-        const name = user.displayName || user.email || "Student";
-        document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
-        document.getElementById("user-name-badge").textContent = name.split(" ")[0];
-        document.getElementById("um-name-text").textContent  = name;
-        document.getElementById("um-email-text").textContent = user.email;
-      }
-      try { updateDoc(doc(db,"users",user.uid), { lastLogin: serverTimestamp() }); } catch(e){}
-    }, err => {
-      clearTimeout(safetyTimer);
-      hideOverlay();
-      window.location.href = "index.html";
-    });
-
-  } catch(initErr) {
-    clearTimeout(safetyTimer);
-    hideOverlay();
-    window.location.href = "index.html";
+  function showAuthError(title, detail) {
+    document.getElementById("auth-spinner").style.display = "none";
+    document.getElementById("auth-status-msg").innerHTML =
+      "<strong style='color:#fca5a5'>" + title + "</strong>";
+    const box = document.getElementById("auth-error-box");
+    box.textContent = detail;
+    box.style.display = "block";
+    document.getElementById("auth-bypass-btn").style.display = "block";
+    document.getElementById("auth-login-link").style.display = "block";
   }
 
-  window.trackChapterVisit = async function(ci, title) {
-    if (!currentUser) return;
-    try { await updateDoc(doc(db,"users",currentUser.uid), { chaptersVisited: arrayUnion(title) }); } catch(e){}
-  };
+  // Check if running on file:// protocol
+  if (window.location.protocol === "file:") {
+    showAuthError(
+      "Cannot run Firebase on local files.",
+      "You are opening this as a local file (file://). Firebase auth requires a real web server. Either upload to GitHub Pages, or use VS Code Live Server extension to test locally. Click 'Open App Anyway' to preview without auth."
+    );
+  } else {
+    // Load Firebase dynamically
+    setAuthMsg("Connecting to Firebase…");
 
-  window.trackQuizScore = async function(ci, score, total) {
-    if (!currentUser) return;
-    try {
-      const key = "quizScores.ch" + ci;
-      await updateDoc(doc(db,"users",currentUser.uid), {
-        [key]: { score, total, pct: Math.round(score/total*100), at: new Date().toISOString() }
+    import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(({ initializeApp, getApps }) => {
+      return Promise.all([
+        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"),
+        import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
+      ]).then(([authMod, dbMod]) => {
+
+        setAuthMsg("Checking session…");
+
+        const firebaseConfig = {
+          apiKey:            "AIzaSyA6vqWMng8mKnuiclk1SIUZLIrShmTo6YY",
+          authDomain:        "icse-ix-app.firebaseapp.com",
+          projectId:         "icse-ix-app",
+          storageBucket:     "icse-ix-app.firebasestorage.app",
+          messagingSenderId: "32970752586",
+          appId:             "1:32970752586:web:69c5da5b650481a7a51cb3"
+        };
+
+        const app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+        const auth = authMod.getAuth(app);
+        const db   = dbMod.getFirestore(app);
+        let currentUser = null;
+
+        // 10 second safety net
+        const timer = setTimeout(() => {
+          showAuthError(
+            "Firebase timed out.",
+            "Could not connect to Firebase after 10 seconds. Possible causes: (1) Your GitHub Pages domain is not added to Firebase Authorized Domains. (2) Email/Password sign-in is not enabled in Firebase Console. (3) Network/firewall issue."
+          );
+        }, 10000);
+
+        authMod.onAuthStateChanged(auth, user => {
+          clearTimeout(timer);
+          if (!user) {
+            setAuthMsg("Not signed in — redirecting…");
+            setTimeout(() => { window.location.href = "index.html"; }, 1000);
+            return;
+          }
+          currentUser = user;
+          document.getElementById("auth-loading-overlay").style.display = "none";
+
+          const badge = document.getElementById("user-badge");
+          if (badge) {
+            badge.style.display = "flex";
+            const name = user.displayName || user.email || "Student";
+            document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
+            document.getElementById("user-name-badge").textContent = name.split(" ")[0];
+            document.getElementById("um-name-text").textContent  = name;
+            document.getElementById("um-email-text").textContent = user.email;
+          }
+          try { dbMod.updateDoc(dbMod.doc(db,"users",user.uid), { lastLogin: dbMod.serverTimestamp() }); } catch(e){}
+        }, err => {
+          clearTimeout(timer);
+          showAuthError("Firebase Auth Error", err.code + ": " + err.message);
+        });
+
+        window.trackChapterVisit = async (ci, title) => {
+          if (!currentUser) return;
+          try { await dbMod.updateDoc(dbMod.doc(db,"users",currentUser.uid), { chaptersVisited: dbMod.arrayUnion(title) }); } catch(e){}
+        };
+        window.trackQuizScore = async (ci, score, total) => {
+          if (!currentUser) return;
+          try { await dbMod.updateDoc(dbMod.doc(db,"users",currentUser.uid), { ["quizScores.ch"+ci]: { score, total, pct: Math.round(score/total*100) } }); } catch(e){}
+        };
+        window.doSignOut = async () => {
+          try { await authMod.signOut(auth); } catch(e){}
+          window.location.href = "index.html";
+        };
+        window.showUserMenu = () => {
+          const m = document.getElementById("user-menu");
+          m.classList.toggle("open");
+        };
       });
-    } catch(e){}
-  };
-
-  window.doSignOut = async function() {
-    try { await signOut(auth); } catch(e){}
-    window.location.href = "index.html";
-  };
-
-  window.showUserMenu = function() {
-    const m = document.getElementById("user-menu");
-    m.classList.toggle("open");
-    document.addEventListener("click", function closeMenu(e) {
-      const badge = document.getElementById("user-badge");
-      if (!m.contains(e.target) && badge && !badge.contains(e.target)) {
-        m.classList.remove("open");
-        document.removeEventListener("click", closeMenu);
-      }
+    }).catch(err => {
+      showAuthError(
+        "Failed to load Firebase SDK.",
+        "Error: " + err.message + ". This usually means no internet connection, or a browser extension (like an ad blocker) is blocking Firebase. Try disabling extensions or use a different browser."
+      );
     });
-  };
-<\/script>
+  }
+</script>
 
 </body>
 </html>
